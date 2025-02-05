@@ -1,10 +1,23 @@
 import { ADD_REMINDER, EDIT_REMINDER, DELETE_REMINDER } from "../utils/constants";
 
 export interface Reminder {
-  id: string;
   text: string;
   time: string;
-  color?: string;
+  city: string;
+}
+
+export interface ReminderDetail {
+  date: string;
+  index: number;
+  reminder: Reminder;
+}
+
+export interface ReminderFormProps {
+  date: string;
+  addReminder: (date: string, reminder: Reminder) => void;
+  editReminder: (date: string, index: number, updatedReminder: Reminder) => void;
+  closeForm: () => void;
+  detail?: ReminderDetail;
 }
 
 export interface RemindersState {
