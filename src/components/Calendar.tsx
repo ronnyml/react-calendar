@@ -8,20 +8,25 @@ import {
   TOTAL_SQUARES,
   DAYS_OF_WEEK,
   WEEKEND_CLASSES,
-  MAX_VISIBLE_REMINDERS
+  MAX_VISIBLE_REMINDERS,
+  ADD_REMINDER,
+  EDIT_REMINDER
 } from "../utils/constants";
+import ReminderForm from "./ReminderForm";
 import YearSelector from "./YearSelector";
 import { GenerateDaysProps } from "../interfaces/GenerateDays";
 import { Reminder } from "../interfaces/Reminder";
 
 const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(dayjs());
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [showYearSelector, setShowYearSelector] = useState(false);
   const [baseYear, setBaseYear] = useState(currentDate.year());
   const startOfMonth = currentDate.startOf("month");
   const daysInMonth = startOfMonth.daysInMonth();
   const startDay = startOfMonth.day();
-  const [reminders] = useReducer(remindersReducer, {});
+  const [reminders, dispatch] = useReducer(remindersReducer, {});
+  const [showReminderForm, setShowReminderForm] = useState(false);
 
   const changeMonth = (offset: number) =>
     setCurrentDate(currentDate.add(offset, "month"));
@@ -36,7 +41,14 @@ const Calendar = () => {
     const dayReminders = reminders[date] || [];
 
     return (
-      <div className={`day ${className}`} key={key}>
+      <div
+        className={`day ${className}`}
+        key={key}
+        onClick={() => {
+          setSelectedDate(date);
+          setShowReminderForm(true);
+        }}
+      >
         <div className="day-header">
           <span>{day}</span>
           <div className="reminders">
@@ -110,6 +122,18 @@ const Calendar = () => {
     return [...prevMonthDays, ...currentMonthDays, ...nextMonthDays];
   };
 
+  const addReminder = (date: string, reminder: Reminder) => {
+    dispatch({ type: ADD_REMINDER, payload: { date, reminder } });
+    setShowReminderForm(false);
+  };
+
+  const editReminder = (date: string, index: number, updatedReminder: Reminder) => {
+    dispatch({
+      type: EDIT_REMINDER,
+      payload: { date, index, updatedReminder },
+    });
+  };
+
   return (
     <div className="calendar-container">
       <div className="header">
@@ -138,6 +162,14 @@ const Calendar = () => {
         ))}
       </div>
       <div className="days-grid">{renderDays()}</div>
+      {showReminderForm && selectedDate && (
+        <ReminderForm
+          date={selectedDate}
+          addReminder={addReminder}
+          editReminder={editReminder}
+          closeForm={() => setShowReminderForm(false)}
+        />
+      )}
     </div>
   );
 };

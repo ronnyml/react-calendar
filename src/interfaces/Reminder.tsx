@@ -20,6 +20,13 @@ export interface ReminderFormProps {
   detail?: ReminderDetail;
 }
 
+export interface ReminderDetailProps {
+  details: ReminderDetail;
+  editReminder: (date: string, index: number, updatedReminder: Reminder) => void;
+  setShowReminderForm: (params: { details: ReminderDetail; isEditMode: boolean }) => void;
+  closeDetail: () => void;
+}
+
 export interface RemindersState {
   [date: string]: Reminder[];
 }

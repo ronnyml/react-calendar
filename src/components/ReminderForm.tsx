@@ -73,7 +73,6 @@ const ReminderForm: React.FC<ReminderFormProps> = ({
           name="time"
           value={formData.time}
           onChange={handleChange}
-          className="time-select"
         >
           <option value="">Select time</option>
           {generateTimeOptions().map((timeOption) => (
