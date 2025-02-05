@@ -3,10 +3,10 @@ import { Reminder, ReminderFormProps } from "../interfaces/Reminder";
 
 const ReminderForm: React.FC<ReminderFormProps> = ({
   date,
+  detail,
   addReminder,
   editReminder,
-  closeForm,
-  detail,
+  closeForm
 }) => {
   const isEditMode = Boolean(detail);
   const [formData, setFormData] = useState<Reminder>({

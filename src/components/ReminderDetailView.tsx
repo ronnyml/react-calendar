@@ -1,13 +1,13 @@
 import React from "react";
 import { ReminderDetailProps } from "../interfaces/Reminder";
 
-const ReminderDetail: React.FC<ReminderDetailProps> = ({
-  details,
+const ReminderDetailView: React.FC<ReminderDetailProps> = ({
+  detail,
   setShowReminderForm,
   closeDetail,
-  openDeleteConfirmation,
+  openDeleteConfirmation
 }) => {
-  const { reminder, date } = details;
+  const { reminder, date } = detail;
   const formattedDate = new Date(date).toLocaleDateString("en-US", {
     weekday: "long",
     month: "long",
@@ -26,7 +26,7 @@ const ReminderDetail: React.FC<ReminderDetailProps> = ({
             onClick={() => {
               closeDetail();
               setShowReminderForm({
-                details,
+                detail,
                 isEditMode: true,
               });
             }}
@@ -48,4 +48,4 @@ const ReminderDetail: React.FC<ReminderDetailProps> = ({
   );
 };
 
-export default ReminderDetail;
+export default ReminderDetailView;

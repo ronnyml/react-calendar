@@ -13,9 +13,11 @@ import {
   EDIT_REMINDER
 } from "../utils/constants";
 import ReminderForm from "./ReminderForm";
+import ReminderList from "./ReminderList";
+import ReminderDetailView from "./ReminderDetailView";
 import YearSelector from "./YearSelector";
 import { GenerateDaysProps } from "../interfaces/GenerateDays";
-import { Reminder } from "../interfaces/Reminder";
+import { Reminder, ReminderDetail, ShowReminderFormState } from "../interfaces/Reminder";
 
 const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(dayjs());
@@ -26,7 +28,8 @@ const Calendar = () => {
   const daysInMonth = startOfMonth.daysInMonth();
   const startDay = startOfMonth.day();
   const [reminders, dispatch] = useReducer(remindersReducer, {});
-  const [showReminderForm, setShowReminderForm] = useState(false);
+  const [reminderDetail, setReminderDetail] = useState<ReminderDetail | null>(null);
+  const [showReminderForm, setShowReminderForm] = useState<ShowReminderFormState | null>(null);
 
   const changeMonth = (offset: number) =>
     setCurrentDate(currentDate.add(offset, "month"));
@@ -39,6 +42,7 @@ const Calendar = () => {
   const renderDay = (day: number, key: string, className: string) => {
     const date = dayjs(currentDate).date(day).format("YYYY-MM-DD");
     const dayReminders = reminders[date] || [];
+    const hiddenRemindersCount = dayReminders.length - MAX_VISIBLE_REMINDERS;
 
     return (
       <div
@@ -46,7 +50,7 @@ const Calendar = () => {
         key={key}
         onClick={() => {
           setSelectedDate(date);
-          setShowReminderForm(true);
+          setShowReminderForm({ isEditMode: false, detail: null });
         }}
       >
         <div className="day-header">
@@ -60,6 +64,8 @@ const Calendar = () => {
                   key={index}
                   onClick={(e) => {
                     e.stopPropagation();
+                    setReminderDetail({date, reminder, index});
+                    setShowReminderForm({ isEditMode: true, detail: { date, index, reminder } });
                   }}
                 >
                   {reminder.text.length > 10
@@ -124,7 +130,7 @@ const Calendar = () => {
 
   const addReminder = (date: string, reminder: Reminder) => {
     dispatch({ type: ADD_REMINDER, payload: { date, reminder } });
-    setShowReminderForm(false);
+    setShowReminderForm(null);
   };
 
   const editReminder = (date: string, index: number, updatedReminder: Reminder) => {
@@ -132,6 +138,7 @@ const Calendar = () => {
       type: EDIT_REMINDER,
       payload: { date, index, updatedReminder },
     });
+    setShowReminderForm(null);
   };
 
   return (
@@ -165,9 +172,18 @@ const Calendar = () => {
       {showReminderForm && selectedDate && (
         <ReminderForm
           date={selectedDate}
+          detail={showReminderForm.detail}
           addReminder={addReminder}
           editReminder={editReminder}
-          closeForm={() => setShowReminderForm(false)}
+          closeForm={() => setShowReminderForm(null)}
+        />
+      )}
+      {reminderDetail && (
+        <ReminderDetailView
+          detail={reminderDetail}
+          editReminder={editReminder}
+          setShowReminderForm={setShowReminderForm}
+          closeDetail={() => setReminderDetail(null)}
         />
       )}
     </div>

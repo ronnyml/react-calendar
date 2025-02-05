@@ -14,25 +14,30 @@ export interface ReminderDetail {
 
 export interface ReminderFormProps {
   date: string;
+  detail: ReminderDetail | null;
   addReminder: (date: string, reminder: Reminder) => void;
   editReminder: (date: string, index: number, updatedReminder: Reminder) => void;
   closeForm: () => void;
-  detail?: ReminderDetail;
 }
 
 export interface ReminderDetailProps {
-  details: ReminderDetail;
+  detail: ReminderDetail;
   editReminder: (date: string, index: number, updatedReminder: Reminder) => void;
-  setShowReminderForm: (params: { details: ReminderDetail; isEditMode: boolean }) => void;
+  setShowReminderForm: (params: { detail: ReminderDetail; isEditMode: boolean }) => void;
   closeDetail: () => void;
-  openDeleteConfirmation: () => void;
+  openDeleteConfirmation?: () => void;
 }
 
 export interface ReminderListProps {
   date: string;
   reminders: Reminder[];
   closePopup: () => void;
-  onReminderClick: (details: { date: string; reminder: Reminder; index: number }) => void;
+  onReminderClick: (detail: ReminderDetail) => void;
+}
+
+export interface ShowReminderFormState {
+  isEditMode: boolean;
+  detail: ReminderDetail | null;
 }
 
 export interface RemindersState {
