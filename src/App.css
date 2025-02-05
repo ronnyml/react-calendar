@@ -221,3 +221,109 @@
 .close-button:hover {
   color: var(--text-dark);
 }
+
+.reminder-list {
+  position: relative;
+  background-color: var(--bg-white);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-md);
+  box-shadow: var(--shadow);
+  text-align: left;
+  width: 20rem;
+}
+
+.reminder-list h3 {
+  margin-bottom: var(--spacing-md);
+  font-size: var(--text-lg);
+}
+
+.reminder-list ul {
+  list-style: none;
+  padding: 0;
+}
+
+.reminder-list li {
+  padding: var(--spacing-sm) 0;
+  cursor: pointer;
+  color: var(--primary-color);
+  text-decoration: underline;
+}
+
+.reminder-list li:last-child {
+  border-bottom: none;
+}
+
+.reminder-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.5);
+  width: 100vw;
+  height: 100vh;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.reminder-form, .reminder-details {
+  position: relative;
+  background-color: var(--bg-white);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow);
+  width: 25rem;
+}
+
+.reminder-form h3, .reminder-details h3 {
+  margin-bottom: var(--spacing-md);
+  font-size: var(--text-xl);
+}
+
+.reminder-form input {
+  width: 90%;
+}
+
+.reminder-form select {
+  width: 95%;
+}
+
+.reminder-form input,
+.reminder-form select {
+  padding: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+}
+
+.reminder-form .submit-button {
+  background-color: var(--primary-color);
+  color: var(--bg-white);
+  border: none;
+  padding: var(--spacing-sm);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-size: var(--text-base);
+  width: 95%;
+}
+
+.reminder-form .submit-button:disabled {
+  background-color: var(--bg-disabled);
+  cursor: not-allowed;
+}
+
+.reminder-form .submit-button:hover:enabled {
+  background-color: var(--primary-dark);
+}
+
+.reminder-details p {
+  margin: var(--spacing-sm) 0;
+  text-align: left;
+}
+
+.warning {
+  color: var(--danger-color);
+  font-size: var(--text-sm);
+  margin-bottom: var(--spacing-sm);
+}
