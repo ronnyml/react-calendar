@@ -28,6 +28,13 @@ export interface ReminderDetailProps {
   openDeleteConfirmation: () => void;
 }
 
+export interface ReminderListProps {
+  date: string;
+  reminders: Reminder[];
+  closePopup: () => void;
+  onReminderClick: (details: { date: string; reminder: Reminder; index: number }) => void;
+}
+
 export interface RemindersState {
   [date: string]: Reminder[];
 }
