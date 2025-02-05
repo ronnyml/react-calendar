@@ -1,42 +1,14 @@
-export const ADD_REMINDER = "ADD_REMINDER";
-export const EDIT_REMINDER = "EDIT_REMINDER";
-export const DELETE_REMINDER = "DELETE_REMINDER";
-
-interface Reminder {
-  id: string;
-  text: string;
-  time: string;
-  color?: string;
-}
-
-interface RemindersState {
-  [date: string]: Reminder[];
-}
-
-interface AddReminderAction {
-  type: typeof ADD_REMINDER;
-  payload: {
-    date: string;
-    reminder: Reminder;
-  };
-}
-
-interface EditReminderAction {
-  type: typeof EDIT_REMINDER;
-  payload: {
-    date: string;
-    index: number;
-    updatedReminder: Reminder;
-  };
-}
-
-interface DeleteReminderAction {
-  type: typeof DELETE_REMINDER;
-  payload: {
-    date: string;
-    index: number;
-  };
-}
+import {
+  ADD_REMINDER,
+  EDIT_REMINDER,
+  DELETE_REMINDER
+} from "../utils/constants";
+import {
+  AddReminderAction,
+  EditReminderAction,
+  DeleteReminderAction,
+  RemindersState
+} from "../interfaces/Reminder";
 
 type ReminderActions = AddReminderAction | EditReminderAction | DeleteReminderAction;
 

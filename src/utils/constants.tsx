@@ -15,3 +15,7 @@ export const DAYS_OF_WEEK: string[] = [
 
 export const WEEKEND_CLASSES = (index: number): string => 
   index % DAYS_IN_WEEK === 0 || index % DAYS_IN_WEEK === 6 ? "weekend" : "";
+
+export const ADD_REMINDER = "ADD_REMINDER";
+export const EDIT_REMINDER = "EDIT_REMINDER";
+export const DELETE_REMINDER = "DELETE_REMINDER";
