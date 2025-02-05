@@ -25,6 +25,7 @@ export interface ReminderDetailProps {
   editReminder: (date: string, index: number, updatedReminder: Reminder) => void;
   setShowReminderForm: (params: { details: ReminderDetail; isEditMode: boolean }) => void;
   closeDetail: () => void;
+  openDeleteConfirmation: () => void;
 }
 
 export interface RemindersState {

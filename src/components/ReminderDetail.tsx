@@ -1,9 +1,11 @@
+import React from "react";
 import { ReminderDetailProps } from "../interfaces/Reminder";
 
 const ReminderDetail: React.FC<ReminderDetailProps> = ({
   details,
   setShowReminderForm,
   closeDetail,
+  openDeleteConfirmation,
 }) => {
   const { reminder, date } = details;
   const formattedDate = new Date(date).toLocaleDateString("en-US", {
@@ -28,6 +30,10 @@ const ReminderDetail: React.FC<ReminderDetailProps> = ({
                 isEditMode: true,
               });
             }}
+          ></button>
+          <button
+            className="icon-button delete-icon"
+            onClick={openDeleteConfirmation}
           ></button>
         </div>
         <h3>{reminder.text}</h3>
