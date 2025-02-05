@@ -1,13 +1,18 @@
-import { useState } from "react";
+import { useState, useReducer } from "react";
 import dayjs from "dayjs";
 
+import {
+  remindersReducer
+} from "../state/remindersReducer";
 import {
   TOTAL_SQUARES,
   DAYS_OF_WEEK,
   WEEKEND_CLASSES,
+  MAX_VISIBLE_REMINDERS
 } from "../utils/constants";
 import YearSelector from "./YearSelector";
 import { GenerateDaysProps } from "../interfaces/GenerateDays";
+import { Reminder } from "../interfaces/Reminder";
 
 const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(dayjs());
@@ -16,6 +21,7 @@ const Calendar = () => {
   const startOfMonth = currentDate.startOf("month");
   const daysInMonth = startOfMonth.daysInMonth();
   const startDay = startOfMonth.day();
+  const [reminders] = useReducer(remindersReducer, {});
 
   const changeMonth = (offset: number) =>
     setCurrentDate(currentDate.add(offset, "month"));
@@ -26,10 +32,30 @@ const Calendar = () => {
   };
 
   const renderDay = (day: number, key: string, className: string) => {
+    const date = dayjs(currentDate).date(day).format("YYYY-MM-DD");
+    const dayReminders = reminders[date] || [];
+
     return (
       <div className={`day ${className}`} key={key}>
         <div className="day-header">
           <span>{day}</span>
+          <div className="reminders">
+            {dayReminders
+              .slice(0, MAX_VISIBLE_REMINDERS)
+              .map((reminder: Reminder, index: number) => (
+                <div
+                  className="reminder clickable"
+                  key={index}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
+                >
+                  {reminder.text.length > 10
+                    ? `${reminder.text.slice(0, 10)}...`
+                    : reminder.text}
+                </div>
+              ))}
+          </div>
         </div>
       </div>
     );
