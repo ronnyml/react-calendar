@@ -4,6 +4,10 @@
 
 React calendar application built with TypeScript that allows users to manage reminders. The app provides functionalities like adding, editing, and deleting reminders for specific dates. It integrates weather forecast data for cities using the Visual Crossing Weather API, offering detailed weather conditions for the reminder's date and location.
 
+## Live demo
+
+[https://react-calendar-seven-beta.vercel.app](https://react-calendar-seven-beta.vercel.app)
+
 ## Code structure
 
 The project structure is designed to enhance modularity, readability, and maintainability.
