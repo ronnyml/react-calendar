@@ -3,6 +3,7 @@ import dayjs from "dayjs";
 import { ReminderDetailProps } from "../interfaces/Reminder";
 import { WeatherDay } from "../interfaces/Weather";
 import { getWeatherForecast } from "../services/weatherService";
+import { getCachedWeather, setCachedWeather } from "../services/weatherCache";
 
 const ReminderDetailView: React.FC<ReminderDetailProps> = ({
   detail,
@@ -18,7 +19,17 @@ const ReminderDetailView: React.FC<ReminderDetailProps> = ({
   useEffect(() => {
     async function fetchWeather() {
       setLoading(true);
+      const cachedWeather = getCachedWeather(reminder.city, date);
+      if (cachedWeather) {
+        setWeather(cachedWeather);
+        setLoading(false);
+        return;
+      }
+
       const weatherData = await getWeatherForecast(reminder.city, date);
+      if (weatherData) {
+        setCachedWeather(reminder.city, date, weatherData);
+      }
       setWeather(weatherData);
       setLoading(false);
     }
