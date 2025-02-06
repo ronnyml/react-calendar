@@ -19,3 +19,5 @@ export const WEEKEND_CLASSES = (index: number): string =>
 export const ADD_REMINDER = "ADD_REMINDER";
 export const EDIT_REMINDER = "EDIT_REMINDER";
 export const DELETE_REMINDER = "DELETE_REMINDER";
+
+export const WEATHER_BASE_URL = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline";
