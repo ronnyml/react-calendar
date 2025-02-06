@@ -1,9 +1,9 @@
 import { WEATHER_BASE_URL } from "../utils/constants";
-import { WeatherApiResponse, WeatherForecast } from "../interfaces/Weather";
+import { WeatherApiResponse, WeatherDay } from "../interfaces/Weather";
 
-const API_KEY = process.env.REACT_APP_VISUAL_CROSSING_API_KEY;
+const API_KEY = import.meta.env.VITE_VISUAL_CROSSING_API_KEY;
 
-export async function getWeatherForecast(city: string, date: string): Promise<WeatherForecast | null> {
+export async function getWeatherForecast(city: string, date: string): Promise<WeatherDay | null> {
   const formattedDate = new Date(date).toISOString().split("T")[0];
   const url = `${WEATHER_BASE_URL}/${city}/${formattedDate}?unitGroup=metric&key=${API_KEY}&include=days`;
 
@@ -19,7 +19,7 @@ export async function getWeatherForecast(city: string, date: string): Promise<We
         city: data.resolvedAddress,
         conditions: day.conditions,
         description: day.description,
-        temperature: day.temp,
+        temperature: day.temperature,
       };
     }
     return null;

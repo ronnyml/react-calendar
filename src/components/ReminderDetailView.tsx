@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { ReminderDetailProps } from "../interfaces/Reminder";
+import { WeatherDay } from "../interfaces/Weather";
+import { getWeatherForecast } from "../services/weatherService";
 
 const ReminderDetailView: React.FC<ReminderDetailProps> = ({
   detail,
@@ -13,6 +15,21 @@ const ReminderDetailView: React.FC<ReminderDetailProps> = ({
     month: "long",
     day: "numeric",
   });
+  const [weather, setWeather] = useState<WeatherDay | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchWeather() {
+      setLoading(true);
+      const weatherData = await getWeatherForecast(reminder.city, date);
+      setWeather(weatherData);
+      setLoading(false);
+    }
+
+    if (reminder.city) {
+      fetchWeather();
+    }
+  }, [reminder.city, date]);
 
   return (
     <div className="reminder-popup">
@@ -43,6 +60,24 @@ const ReminderDetailView: React.FC<ReminderDetailProps> = ({
         <p>
           <strong>{reminder.city}</strong>
         </p>
+        {loading ? (
+          <p>Loading weather...</p>
+        ) : weather ? (
+          <div>
+            <p>
+              <strong>Weather Conditions for:</strong> {weather.city}
+            </p>
+            <p>
+              <strong>Conditions:</strong> {weather.conditions}
+            </p>
+            <p>
+              <strong>Temperature:</strong> {weather.temperature}
+            </p>
+            <p>{weather.description}</p>
+          </div>
+        ) : (
+          <p>Weather information not available.</p>
+        )}
       </div>
     </div>
   );
