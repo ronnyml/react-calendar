@@ -10,8 +10,10 @@ import {
   WEEKEND_CLASSES,
   MAX_VISIBLE_REMINDERS,
   ADD_REMINDER,
-  EDIT_REMINDER
+  EDIT_REMINDER,
+  DELETE_REMINDER
 } from "../utils/constants";
+import DeleteConfirmation from "./DeleteConfirmation";
 import ReminderForm from "./ReminderForm";
 import ReminderList from "./ReminderList";
 import ReminderDetailView from "./ReminderDetailView";
@@ -30,6 +32,8 @@ const Calendar = () => {
   const [reminders, dispatch] = useReducer(remindersReducer, {});
   const [reminderDetail, setReminderDetail] = useState<ReminderDetail | null>(null);
   const [showReminderForm, setShowReminderForm] = useState<ShowReminderFormState | null>(null);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [viewMoreDate, setViewMoreDate] = useState<string | null>(null);
 
   const changeMonth = (offset: number) =>
     setCurrentDate(currentDate.add(offset, "month"));
@@ -39,9 +43,9 @@ const Calendar = () => {
     setShowYearSelector(false);
   };
 
-  const renderDay = (day: number, key: string, className: string) => {
-    const date = dayjs(currentDate).date(day).format("YYYY-MM-DD");
-    const dayReminders = reminders[date] || [];
+  const renderDay = (day: number, key: string, date: dayjs.Dayjs, className: string) => {
+    const formattedDate = date.format("YYYY-MM-DD");
+    const dayReminders = reminders[formattedDate] || [];
     const hiddenRemindersCount = dayReminders.length - MAX_VISIBLE_REMINDERS;
 
     return (
@@ -49,7 +53,7 @@ const Calendar = () => {
         className={`day ${className}`}
         key={key}
         onClick={() => {
-          setSelectedDate(date);
+          setSelectedDate(formattedDate);
           setShowReminderForm({ isEditMode: false, detail: null });
         }}
       >
@@ -64,8 +68,7 @@ const Calendar = () => {
                   key={index}
                   onClick={(e) => {
                     e.stopPropagation();
-                    setReminderDetail({date, reminder, index});
-                    setShowReminderForm({ isEditMode: true, detail: { date, index, reminder } });
+                    setReminderDetail({date: formattedDate, reminder, index});
                   }}
                 >
                   {reminder.text.length > 10
@@ -73,6 +76,17 @@ const Calendar = () => {
                     : reminder.text}
                 </div>
               ))}
+            {hiddenRemindersCount > 0 && (
+              <div
+                className="view-more clickable"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setViewMoreDate(formattedDate);
+                }}
+              >
+                +{hiddenRemindersCount}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -88,10 +102,11 @@ const Calendar = () => {
   }: GenerateDaysProps) => {
     const days = [];
     for (let i = 0; i < totalDays; i++) {
+      const dayDate = baseDate.add(offset + i, "day");
       const currentDay = baseDate.add(offset + i, "day").date();
       const key = `${labelPrefix}-${i}`;
       const className = `${extraClass} ${WEEKEND_CLASSES(offset + startDay + i)}`;
-      days.push(renderDay(currentDay, key, className));
+      days.push(renderDay(currentDay, key, dayDate, className));
     }
     return days;
   };
@@ -141,6 +156,12 @@ const Calendar = () => {
     setShowReminderForm(null);
   };
 
+  const deleteReminder = (date: string, index: number) => {
+    dispatch({ type: DELETE_REMINDER, payload: { date, index } });
+    setReminderDetail(null);
+    setShowDeleteConfirmation(false);
+  };
+
   return (
     <div className="calendar-container">
       <div className="header">
@@ -169,6 +190,14 @@ const Calendar = () => {
         ))}
       </div>
       <div className="days-grid">{renderDays()}</div>
+      {viewMoreDate && (
+        <ReminderList
+          date={viewMoreDate}
+          reminders={reminders[viewMoreDate]}
+          closePopup={() => setViewMoreDate(null)}
+          onReminderClick={(detail) => setReminderDetail(detail)}
+        />
+      )}
       {showReminderForm && selectedDate && (
         <ReminderForm
           date={selectedDate}
@@ -178,12 +207,24 @@ const Calendar = () => {
           closeForm={() => setShowReminderForm(null)}
         />
       )}
-      {reminderDetail && (
+      {reminderDetail && !showDeleteConfirmation && (
         <ReminderDetailView
           detail={reminderDetail}
           editReminder={editReminder}
-          setShowReminderForm={setShowReminderForm}
+          setShowReminderForm={(params) => {
+            setShowReminderForm(params);
+            setReminderDetail(null);
+          }}
+          openDeleteConfirmation={() => setShowDeleteConfirmation(true)}
           closeDetail={() => setReminderDetail(null)}
+        />
+      )}
+      {showDeleteConfirmation && reminderDetail && (
+        <DeleteConfirmation
+          confirmDelete={() =>
+            deleteReminder(reminderDetail.date, reminderDetail.index)
+          }
+          cancelDelete={() => setShowDeleteConfirmation(false)}
         />
       )}
     </div>
