@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import dayjs from "dayjs";
 import { ReminderDetailProps } from "../interfaces/Reminder";
 import { WeatherDay } from "../interfaces/Weather";
 import { getWeatherForecast } from "../services/weatherService";
@@ -10,11 +11,7 @@ const ReminderDetailView: React.FC<ReminderDetailProps> = ({
   openDeleteConfirmation
 }) => {
   const { reminder, date } = detail;
-  const formattedDate = new Date(date).toLocaleDateString("en-US", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-  });
+  const formattedDate = dayjs(date).format("dddd, MMMM D");
   const [weather, setWeather] = useState<WeatherDay | null>(null);
   const [loading, setLoading] = useState(true);
 
