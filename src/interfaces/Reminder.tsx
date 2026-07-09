@@ -1,9 +1,12 @@
 import { ADD_REMINDER, EDIT_REMINDER, DELETE_REMINDER } from "../utils/constants";
 
+export type ReminderCategory = "work" | "personal" | "health" | "other";
+
 export interface Reminder {
   text: string;
   time: string;
   city: string;
+  category: ReminderCategory;
 }
 
 export interface ReminderDetail {

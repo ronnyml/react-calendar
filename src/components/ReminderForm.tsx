@@ -1,5 +1,12 @@
 import React, { useState, useEffect, ChangeEvent } from "react";
-import { Reminder, ReminderFormProps } from "../interfaces/Reminder";
+import { Reminder, ReminderFormProps, ReminderCategory } from "../interfaces/Reminder";
+
+const CATEGORIES: { value: ReminderCategory; label: string }[] = [
+  { value: "work",     label: "💼 Work"     },
+  { value: "personal", label: "🏠 Personal"  },
+  { value: "health",   label: "💪 Health"    },
+  { value: "other",    label: "📌 Other"     },
+];
 
 const ReminderForm: React.FC<ReminderFormProps> = ({
   date,
@@ -13,14 +20,16 @@ const ReminderForm: React.FC<ReminderFormProps> = ({
     text: "",
     time: "",
     city: "",
+    category: "other",
   });
 
   useEffect(() => {
     if (isEditMode && detail) {
       setFormData({
-        text: detail.reminder.text || "",
-        time: detail.reminder.time || "",
-        city: detail.reminder.city || "",
+        text:     detail.reminder.text     || "",
+        time:     detail.reminder.time     || "",
+        city:     detail.reminder.city     || "",
+        category: detail.reminder.category || "other",
       });
     }
   }, [isEditMode, detail]);
@@ -39,15 +48,12 @@ const ReminderForm: React.FC<ReminderFormProps> = ({
     closeForm();
   };
 
-  // Generate time options for each 15 minutes
   const generateTimeOptions = (): string[] => {
     const times: string[] = [];
     for (let hour = 0; hour < 24; hour++) {
       for (let minutes = 0; minutes < 60; minutes += 15) {
         times.push(
-          `${hour.toString().padStart(2, "0")}:${minutes
-            .toString()
-            .padStart(2, "0")}`
+          `${hour.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`
         );
       }
     }
@@ -57,10 +63,8 @@ const ReminderForm: React.FC<ReminderFormProps> = ({
   return (
     <div className="reminder-popup">
       <div className="reminder-form">
-        <button className="close-button" onClick={closeForm}>
-          X
-        </button>
-        <h3>{isEditMode ? formData.text : `Add Reminder for ${date}`}</h3>
+        <button className="close-button" onClick={closeForm}>✕</button>
+        <h3>{isEditMode ? formData.text : `Add Reminder — ${date}`}</h3>
         <input
           type="text"
           name="text"
@@ -69,31 +73,30 @@ const ReminderForm: React.FC<ReminderFormProps> = ({
           onChange={handleChange}
           maxLength={30}
         />
-        <select
-          name="time"
-          value={formData.time}
-          onChange={handleChange}
-        >
+        <select name="time" value={formData.time} onChange={handleChange}>
           <option value="">Select time</option>
-          {generateTimeOptions().map((timeOption) => (
-            <option value={timeOption} key={timeOption}>
-              {timeOption}
-            </option>
+          {generateTimeOptions().map((t) => (
+            <option value={t} key={t}>{t}</option>
           ))}
         </select>
         <input
           type="text"
           name="city"
-          placeholder="City"
+          placeholder="City (for weather)"
           value={formData.city}
           onChange={handleChange}
         />
+        <select name="category" value={formData.category} onChange={handleChange}>
+          {CATEGORIES.map((c) => (
+            <option value={c.value} key={c.value}>{c.label}</option>
+          ))}
+        </select>
         <button
           className="submit-button"
           onClick={handleSubmit}
           disabled={!formData.text || !formData.time || !formData.city}
         >
-          {isEditMode ? "Update" : "Add"}
+          {isEditMode ? "Update reminder" : "Add reminder"}
         </button>
       </div>
     </div>

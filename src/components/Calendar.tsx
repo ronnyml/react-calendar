@@ -11,7 +11,9 @@ import {
   MAX_VISIBLE_REMINDERS,
   ADD_REMINDER,
   EDIT_REMINDER,
-  DELETE_REMINDER
+  DELETE_REMINDER,
+  CATEGORY_COLORS,
+  CATEGORY_COLORS_DARK,
 } from "../utils/constants";
 import DeleteConfirmation from "./DeleteConfirmation";
 import ReminderForm from "./ReminderForm";
@@ -87,20 +89,25 @@ const Calendar = () => {
           <div className="reminders">
             {dayReminders
               .slice(0, MAX_VISIBLE_REMINDERS)
-              .map((reminder: Reminder, index: number) => (
-                <div
-                  className="reminder-pill clickable"
-                  key={index}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setReminderDetail({date: formattedDate, reminder, index});
-                  }}
-                >
-                  {reminder.text.length > 12
-                    ? `${reminder.text.slice(0, 12)}…`
-                    : reminder.text}
-                </div>
-              ))}
+              .map((reminder: Reminder, index: number) => {
+                const palette = isDark ? CATEGORY_COLORS_DARK : CATEGORY_COLORS;
+                const colors = palette[reminder.category ?? "other"];
+                return (
+                  <div
+                    className="reminder-pill clickable"
+                    key={index}
+                    style={{ background: colors.bg, borderLeftColor: colors.border, color: colors.text }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setReminderDetail({date: formattedDate, reminder, index});
+                    }}
+                  >
+                    {reminder.text.length > 12
+                      ? `${reminder.text.slice(0, 12)}…`
+                      : reminder.text}
+                  </div>
+                );
+              })}
             {hiddenRemindersCount > 0 && (
               <div
                 className="view-more"

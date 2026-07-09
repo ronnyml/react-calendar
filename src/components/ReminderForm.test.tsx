@@ -16,6 +16,7 @@ describe("ReminderForm Component", () => {
       text: "Sample Reminder",
       time: "10:00",
       city: "New York",
+      category: "work" as const,
     },
   };
 
@@ -34,7 +35,7 @@ describe("ReminderForm Component", () => {
       />
     );
 
-    expect(screen.getByText(/Add Reminder for 2025-02-05/i)).toBeInTheDocument();
+    expect(screen.getByText(/Add Reminder — 2025-02-05/i)).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/Reminder text/i)).toBeInTheDocument();
     expect(screen.getByText(/Select time/i)).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/City/i)).toBeInTheDocument();
@@ -70,14 +71,12 @@ describe("ReminderForm Component", () => {
   
     const textInput = screen.getByPlaceholderText(/Reminder text/i);
     const cityInput = screen.getByPlaceholderText(/City/i);
-    const timeSelect = screen.getByRole('combobox');
-  
-    // Update the form fields
+    const [timeSelect] = screen.getAllByRole('combobox');
+
     fireEvent.change(textInput, { target: { value: "New Reminder" } });
     fireEvent.change(cityInput, { target: { value: "Los Angeles" } });
     fireEvent.change(timeSelect, { target: { value: "12:15" } });
-  
-    // Verify the updated values
+
     expect(screen.getByDisplayValue(/New Reminder/i)).toBeInTheDocument();
     expect(screen.getByDisplayValue(/Los Angeles/i)).toBeInTheDocument();
     expect(timeSelect).toHaveValue("12:15");
@@ -96,19 +95,20 @@ describe("ReminderForm Component", () => {
   
     const textInput = screen.getByPlaceholderText(/Reminder text/i);
     const cityInput = screen.getByPlaceholderText(/City/i);
-    const timeSelect = screen.getByRole('combobox');
-    const submitButton = screen.getByRole('button', { name: /add/i });
-  
+    const [timeSelect] = screen.getAllByRole('combobox');
+    const submitButton = screen.getByRole('button', { name: /add reminder/i });
+
     fireEvent.change(textInput, { target: { value: "New Reminder" } });
     fireEvent.change(cityInput, { target: { value: "Los Angeles" } });
     fireEvent.change(timeSelect, { target: { value: "12:15" } });
-  
+
     fireEvent.click(submitButton);
-  
+
     expect(mockAddReminder).toHaveBeenCalledWith("2025-02-05", {
       text: "New Reminder",
       time: "12:15",
       city: "Los Angeles",
+      category: "other",
     });
     expect(mockCloseForm).toHaveBeenCalled();
   });
@@ -125,7 +125,7 @@ describe("ReminderForm Component", () => {
     );
 
     const textInput = screen.getByDisplayValue(/Sample Reminder/i);
-    const submitButton = screen.getByRole('button', { name: /update/i });
+    const submitButton = screen.getByRole('button', { name: /update reminder/i });
 
     fireEvent.change(textInput, { target: { value: "Updated Reminder" } });
     fireEvent.click(submitButton);
@@ -134,6 +134,7 @@ describe("ReminderForm Component", () => {
       text: "Updated Reminder",
       time: "10:00",
       city: "New York",
+      category: "work",
     });
     expect(mockCloseForm).toHaveBeenCalled();
   });
@@ -149,7 +150,7 @@ describe("ReminderForm Component", () => {
       />
     );
 
-    const closeButton = screen.getByText(/X/i);
+    const closeButton = screen.getByText(/✕/i);
     fireEvent.click(closeButton);
 
     expect(mockCloseForm).toHaveBeenCalled();

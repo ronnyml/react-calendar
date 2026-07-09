@@ -425,6 +425,27 @@ body:has(.calendar-container[data-theme="dark"]) {
   transform: none;
 }
 
+/* ── Category badges ─────────────────────────────────────────────────────── */
+.category-badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius-full);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 0.6rem;
+}
+.category-work     { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+.category-personal { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+.category-health   { background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; }
+.category-other    { background: #faf5ff; color: #7e22ce; border: 1px solid #e9d5ff; }
+
+.calendar-container[data-theme="dark"] .category-work     { background: #1e3a5f; color: #93c5fd; border-color: #3b82f6; }
+.calendar-container[data-theme="dark"] .category-personal { background: #14532d; color: #86efac; border-color: #22c55e; }
+.calendar-container[data-theme="dark"] .category-health   { background: #431407; color: #fdba74; border-color: #f97316; }
+.calendar-container[data-theme="dark"] .category-other    { background: #3b0764; color: #d8b4fe; border-color: #a855f7; }
+
 /* ── Reminder detail view ────────────────────────────────────────────────── */
 .reminder-details p {
   margin: 0.5rem 0;

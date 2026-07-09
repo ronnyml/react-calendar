@@ -61,9 +61,12 @@ const ReminderDetailView: React.FC<ReminderDetailProps> = ({
             onClick={openDeleteConfirmation}
           ></button>
         </div>
+        <span className={`category-badge category-${reminder.category ?? "other"}`}>
+          {reminder.category ?? "other"}
+        </span>
         <h3>{reminder.text}</h3>
         <p>
-          {formattedDate} - {reminder.time}
+          {formattedDate} — {reminder.time}
         </p>
         <p>
           <strong>{reminder.city}</strong>
