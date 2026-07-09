@@ -1070,6 +1070,7 @@ body:has(.calendar-container[data-theme="dark"]) {
   .calendar-container {
     border-radius: 0;
     box-shadow: none;
+    min-height: 100vh;
   }
 
   .header {
@@ -1147,5 +1148,16 @@ body:has(.calendar-container[data-theme="dark"]) {
   .agenda-item-time {
     min-width: 2.4rem;
     font-size: 0.72rem;
+  }
+
+  /* Week view: horizontal scroll so all 7 columns + gutter stay readable */
+  .week-view {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .week-header-row,
+  .week-grid-scroll {
+    min-width: 520px;
   }
 }
