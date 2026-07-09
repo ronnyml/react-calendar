@@ -4,13 +4,13 @@ export const YEAR_RANGE_SIZE: number = 12;
 export const MAX_VISIBLE_REMINDERS: number = 2;
 
 export const DAYS_OF_WEEK: string[] = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
+  "Sun",
+  "Mon",
+  "Tue",
+  "Wed",
+  "Thu",
+  "Fri",
+  "Sat",
 ];
 
 export const WEEKEND_CLASSES = (index: number): string => 

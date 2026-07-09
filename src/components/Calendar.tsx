@@ -33,6 +33,7 @@ const loadReminders = (): RemindersState => {
 };
 
 const Calendar = () => {
+  const today = dayjs().format("YYYY-MM-DD");
   const [currentDate, setCurrentDate] = useState(dayjs());
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [showYearSelector, setShowYearSelector] = useState(false);
@@ -45,6 +46,7 @@ const Calendar = () => {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(reminders));
   }, [reminders]);
+
   const [reminderDetail, setReminderDetail] = useState<ReminderDetail | null>(null);
   const [showReminderForm, setShowReminderForm] = useState<ShowReminderFormState | null>(null);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
@@ -57,9 +59,11 @@ const Calendar = () => {
     setCurrentDate(currentDate.year(year));
     setShowYearSelector(false);
   };
+  const goToToday = () => setCurrentDate(dayjs());
 
   const renderDay = (day: number, key: string, date: dayjs.Dayjs, className: string) => {
     const formattedDate = date.format("YYYY-MM-DD");
+    const isToday = formattedDate === today;
     const dayReminders = reminders[formattedDate] || [];
     const hiddenRemindersCount = dayReminders.length - MAX_VISIBLE_REMINDERS;
 
@@ -73,33 +77,33 @@ const Calendar = () => {
         }}
       >
         <div className="day-header">
-          <span>{day}</span>
+          <span className={isToday ? "today-badge" : ""}>{day}</span>
           <div className="reminders">
             {dayReminders
               .slice(0, MAX_VISIBLE_REMINDERS)
               .map((reminder: Reminder, index: number) => (
                 <div
-                  className="reminder clickable"
+                  className="reminder-pill clickable"
                   key={index}
                   onClick={(e) => {
                     e.stopPropagation();
                     setReminderDetail({date: formattedDate, reminder, index});
                   }}
                 >
-                  {reminder.text.length > 10
-                    ? `${reminder.text.slice(0, 10)}...`
+                  {reminder.text.length > 12
+                    ? `${reminder.text.slice(0, 12)}…`
                     : reminder.text}
                 </div>
               ))}
             {hiddenRemindersCount > 0 && (
               <div
-                className="view-more clickable"
+                className="view-more"
                 onClick={(e) => {
                   e.stopPropagation();
                   setViewMoreDate(formattedDate);
                 }}
               >
-                +{hiddenRemindersCount}
+                +{hiddenRemindersCount} more
               </div>
             )}
           </div>
@@ -127,7 +131,6 @@ const Calendar = () => {
   };
 
   const renderDays = () => {
-    // Days from previous month
     const prevMonthDays = generateDays({
       offset: -startDay,
       totalDays: startDay,
@@ -136,7 +139,6 @@ const Calendar = () => {
       extraClass: "other-month",
     });
 
-    // Days in current month
     const currentMonthDays = generateDays({
       offset: 0,
       totalDays: daysInMonth,
@@ -145,7 +147,6 @@ const Calendar = () => {
       extraClass: "current-month",
     });
 
-    // Days from next month
     const nextMonthDaysCount = TOTAL_SQUARES - (prevMonthDays.length + currentMonthDays.length);
     const nextMonthDays = generateDays({
       offset: daysInMonth,
@@ -180,14 +181,17 @@ const Calendar = () => {
   return (
     <div className="calendar-container">
       <div className="header">
-        <button onClick={() => changeMonth(-1)}>&lt;</button>
-        <h2
-          className="clickable-year"
-          onClick={() => setShowYearSelector(!showYearSelector)}
-        >
-          {currentDate.format("MMMM")} {currentDate.format("YYYY")}
-        </h2>
-        <button onClick={() => changeMonth(1)}>&gt;</button>
+        <button className="nav-btn" onClick={() => changeMonth(-1)}>&#8249;</button>
+        <div className="header-center">
+          <h2
+            className="clickable-year"
+            onClick={() => setShowYearSelector(!showYearSelector)}
+          >
+            {currentDate.format("MMMM YYYY")}
+          </h2>
+          <button className="today-btn" onClick={goToToday}>Today</button>
+        </div>
+        <button className="nav-btn" onClick={() => changeMonth(1)}>&#8250;</button>
       </div>
       {showYearSelector && (
         <YearSelector
