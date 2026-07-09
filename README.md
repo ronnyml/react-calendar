@@ -6,6 +6,8 @@ A calendar app for managing reminders, built with React 19, TypeScript, and Vite
 
 [https://react-calendar-seven-beta.vercel.app](https://react-calendar-seven-beta.vercel.app)
 
+![React Calendar screenshot](docs/screenshot.png)
+
 ## Features
 
 - **Month and Agenda views** — switch between a classic calendar grid and a chronological list of all upcoming reminders
