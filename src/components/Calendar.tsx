@@ -22,6 +22,7 @@ import { GenerateDaysProps } from "../interfaces/GenerateDays";
 import { Reminder, ReminderDetail, RemindersState, ShowReminderFormState } from "../interfaces/Reminder";
 
 const STORAGE_KEY = "calendar-reminders";
+const THEME_KEY = "calendar-theme";
 
 const loadReminders = (): RemindersState => {
   try {
@@ -34,6 +35,7 @@ const loadReminders = (): RemindersState => {
 
 const Calendar = () => {
   const today = dayjs().format("YYYY-MM-DD");
+  const [isDark, setIsDark] = useState(() => localStorage.getItem(THEME_KEY) === "dark");
   const [currentDate, setCurrentDate] = useState(dayjs());
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [showYearSelector, setShowYearSelector] = useState(false);
@@ -46,6 +48,10 @@ const Calendar = () => {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(reminders));
   }, [reminders]);
+
+  useEffect(() => {
+    localStorage.setItem(THEME_KEY, isDark ? "dark" : "light");
+  }, [isDark]);
 
   const [reminderDetail, setReminderDetail] = useState<ReminderDetail | null>(null);
   const [showReminderForm, setShowReminderForm] = useState<ShowReminderFormState | null>(null);
@@ -179,7 +185,7 @@ const Calendar = () => {
   };
 
   return (
-    <div className="calendar-container">
+    <div className="calendar-container" data-theme={isDark ? "dark" : "light"}>
       <div className="header">
         <button className="nav-btn" onClick={() => changeMonth(-1)}>&#8249;</button>
         <div className="header-center">
@@ -189,7 +195,12 @@ const Calendar = () => {
           >
             {currentDate.format("MMMM YYYY")}
           </h2>
-          <button className="today-btn" onClick={goToToday}>Today</button>
+          <div className="header-actions">
+            <button className="today-btn" onClick={goToToday}>Today</button>
+            <button className="theme-toggle" onClick={() => setIsDark(d => !d)} aria-label="Toggle dark mode">
+              {isDark ? "☀️" : "🌙"}
+            </button>
+          </div>
         </div>
         <button className="nav-btn" onClick={() => changeMonth(1)}>&#8250;</button>
       </div>
