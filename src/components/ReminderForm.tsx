@@ -79,13 +79,16 @@ const ReminderForm: React.FC<ReminderFormProps> = ({
             <option value={t} key={t}>{t}</option>
           ))}
         </select>
-        <input
-          type="text"
-          name="city"
-          placeholder="City (for weather)"
-          value={formData.city}
-          onChange={handleChange}
-        />
+        <div className="field-with-hint">
+          <input
+            type="text"
+            name="city"
+            placeholder="e.g. New York"
+            value={formData.city}
+            onChange={handleChange}
+          />
+          <span className="field-hint">Optional — adds a weather forecast to this reminder</span>
+        </div>
         <select name="category" value={formData.category} onChange={handleChange}>
           {CATEGORIES.map((c) => (
             <option value={c.value} key={c.value}>{c.label}</option>
@@ -94,7 +97,7 @@ const ReminderForm: React.FC<ReminderFormProps> = ({
         <button
           className="submit-button"
           onClick={handleSubmit}
-          disabled={!formData.text || !formData.time || !formData.city}
+          disabled={!formData.text || !formData.time}
         >
           {isEditMode ? "Update reminder" : "Add reminder"}
         </button>

@@ -400,6 +400,21 @@ body:has(.calendar-container[data-theme="dark"]) {
   box-shadow: 0 0 0 3px rgba(37,99,235,0.15);
 }
 
+.field-with-hint {
+  margin-bottom: 0.9rem;
+}
+
+.field-with-hint input {
+  margin-bottom: 0.25rem;
+}
+
+.field-hint {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  padding: 0 0.1rem;
+}
+
 .reminder-form .submit-button {
   width: 100%;
   padding: 0.65rem;

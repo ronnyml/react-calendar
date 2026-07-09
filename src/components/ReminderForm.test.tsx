@@ -38,7 +38,7 @@ describe("ReminderForm Component", () => {
     expect(screen.getByText(/Add Reminder — 2025-02-05/i)).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/Reminder text/i)).toBeInTheDocument();
     expect(screen.getByText(/Select time/i)).toBeInTheDocument();
-    expect(screen.getByPlaceholderText(/City/i)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/e.g. New York/i)).toBeInTheDocument();
   });
 
   test("renders the edit reminder form correctly", () => {
@@ -70,7 +70,7 @@ describe("ReminderForm Component", () => {
     );
   
     const textInput = screen.getByPlaceholderText(/Reminder text/i);
-    const cityInput = screen.getByPlaceholderText(/City/i);
+    const cityInput = screen.getByPlaceholderText(/e.g. New York/i);
     const [timeSelect] = screen.getAllByRole('combobox');
 
     fireEvent.change(textInput, { target: { value: "New Reminder" } });
@@ -94,7 +94,7 @@ describe("ReminderForm Component", () => {
     );
   
     const textInput = screen.getByPlaceholderText(/Reminder text/i);
-    const cityInput = screen.getByPlaceholderText(/City/i);
+    const cityInput = screen.getByPlaceholderText(/e.g. New York/i);
     const [timeSelect] = screen.getAllByRole('combobox');
     const submitButton = screen.getByRole('button', { name: /add reminder/i });
 
