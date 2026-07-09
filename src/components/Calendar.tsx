@@ -113,8 +113,9 @@ const Calendar = () => {
   const renderDay = (day: number, key: string, date: dayjs.Dayjs, className: string) => {
     const formattedDate = date.format("YYYY-MM-DD");
     const isToday = formattedDate === today;
-    const dayReminders = filteredReminders[formattedDate] || [];
+    const dayReminders = expandedReminders[formattedDate] || [];
     const hiddenRemindersCount = dayReminders.length - MAX_VISIBLE_REMINDERS;
+    const query = search.trim().toLowerCase();
 
     const isDragOver = dragOverDate === formattedDate;
 
@@ -145,9 +146,11 @@ const Calendar = () => {
               .map((reminder: Reminder, index: number) => {
                 const palette = isDark ? CATEGORY_COLORS_DARK : CATEGORY_COLORS;
                 const colors = palette[reminder.category ?? "other"];
+                const isMatch = query && reminder.text.toLowerCase().includes(query);
+                const isDimmed = query && !isMatch;
                 return (
                   <div
-                    className="reminder-pill clickable"
+                    className={`reminder-pill clickable${isMatch ? " pill-match" : ""}${isDimmed ? " pill-dim" : ""}`}
                     key={index}
                     draggable
                     style={{ background: colors.bg, borderLeftColor: colors.border, color: colors.text }}

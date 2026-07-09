@@ -293,6 +293,16 @@ body:has(.calendar-container[data-theme="dark"]) {
   transform: translateX(1px);
 }
 
+.reminder-pill.pill-match {
+  outline: 1.5px solid currentColor;
+  outline-offset: 1px;
+  font-weight: 700;
+}
+
+.reminder-pill.pill-dim {
+  opacity: 0.25;
+}
+
 .view-more {
   font-size: 0.66rem;
   font-weight: 600;
