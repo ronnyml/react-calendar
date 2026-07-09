@@ -16,6 +16,7 @@ import {
   CATEGORY_COLORS_DARK,
 } from "../utils/constants";
 import AgendaView from "./AgendaView";
+import WeekView from "./WeekView";
 import SearchBar from "./SearchBar";
 import DeleteConfirmation from "./DeleteConfirmation";
 import ReminderForm from "./ReminderForm";
@@ -40,7 +41,7 @@ const loadReminders = (): RemindersState => {
 const Calendar = () => {
   const today = dayjs().format("YYYY-MM-DD");
   const [isDark, setIsDark] = useState(() => localStorage.getItem(THEME_KEY) === "dark");
-  const [viewMode, setViewMode] = useState<"month" | "agenda">("month");
+  const [viewMode, setViewMode] = useState<"month" | "week" | "agenda">("month");
   const [search, setSearch] = useState("");
   const [dragOverDate, setDragOverDate] = useState<string | null>(null);
   const dragSource = useRef<{ date: string; index: number } | null>(null);
@@ -250,6 +251,12 @@ const Calendar = () => {
                 Month
               </button>
               <button
+                className={`view-toggle-btn ${viewMode === "week" ? "active" : ""}`}
+                onClick={() => setViewMode("week")}
+              >
+                Week
+              </button>
+              <button
                 className={`view-toggle-btn ${viewMode === "agenda" ? "active" : ""}`}
                 onClick={() => setViewMode("agenda")}
               >
@@ -279,7 +286,7 @@ const Calendar = () => {
           {Object.values(filteredReminders).flat().length !== 1 ? "s" : ""} matching &ldquo;{search}&rdquo;
         </div>
       )}
-      {viewMode === "month" ? (
+      {viewMode === "month" && (
         <>
           <div className="days-of-week">
             {DAYS_OF_WEEK.map((day) => (
@@ -290,7 +297,21 @@ const Calendar = () => {
           </div>
           <div className="days-grid">{renderDays()}</div>
         </>
-      ) : (
+      )}
+      {viewMode === "week" && (
+        <WeekView
+          currentDate={currentDate}
+          reminders={filteredReminders}
+          isDark={isDark}
+          today={today}
+          onReminderClick={(detail) => setReminderDetail(detail)}
+          onSlotClick={(date) => {
+            setSelectedDate(date);
+            setShowReminderForm({ isEditMode: false, detail: null });
+          }}
+        />
+      )}
+      {viewMode === "agenda" && (
         <AgendaView
           reminders={filteredReminders}
           isDark={isDark}
