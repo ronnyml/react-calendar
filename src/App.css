@@ -603,6 +603,58 @@ body:has(.calendar-container[data-theme="dark"]) {
   color: var(--accent-dark);
 }
 
+/* ── Search bar ──────────────────────────────────────────────────────────── */
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+}
+
+.search-icon {
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.search-bar input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 0.88rem;
+  font-family: inherit;
+  color: var(--text-primary);
+  outline: none;
+}
+
+.search-bar input::placeholder {
+  color: var(--text-muted);
+}
+
+.search-clear {
+  background: none;
+  border: none;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.1rem 0.3rem;
+  border-radius: var(--radius);
+  transition: color 0.12s;
+}
+
+.search-clear:hover {
+  color: var(--text-primary);
+}
+
+.search-results-count {
+  padding: 0.35rem 1rem;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  background: var(--accent-light);
+  border-bottom: 1px solid var(--border);
+}
+
 /* ── View toggle ─────────────────────────────────────────────────────────── */
 .view-toggle {
   display: flex;

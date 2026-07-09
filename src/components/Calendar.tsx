@@ -16,6 +16,7 @@ import {
   CATEGORY_COLORS_DARK,
 } from "../utils/constants";
 import AgendaView from "./AgendaView";
+import SearchBar from "./SearchBar";
 import DeleteConfirmation from "./DeleteConfirmation";
 import ReminderForm from "./ReminderForm";
 import ReminderList from "./ReminderList";
@@ -40,6 +41,7 @@ const Calendar = () => {
   const today = dayjs().format("YYYY-MM-DD");
   const [isDark, setIsDark] = useState(() => localStorage.getItem(THEME_KEY) === "dark");
   const [viewMode, setViewMode] = useState<"month" | "agenda">("month");
+  const [search, setSearch] = useState("");
   const [currentDate, setCurrentDate] = useState(dayjs());
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [showYearSelector, setShowYearSelector] = useState(false);
@@ -74,7 +76,7 @@ const Calendar = () => {
   const renderDay = (day: number, key: string, date: dayjs.Dayjs, className: string) => {
     const formattedDate = date.format("YYYY-MM-DD");
     const isToday = formattedDate === today;
-    const dayReminders = reminders[formattedDate] || [];
+    const dayReminders = filteredReminders[formattedDate] || [];
     const hiddenRemindersCount = dayReminders.length - MAX_VISIBLE_REMINDERS;
 
     return (
@@ -174,6 +176,17 @@ const Calendar = () => {
     return [...prevMonthDays, ...currentMonthDays, ...nextMonthDays];
   };
 
+  const filteredReminders: RemindersState = search.trim()
+    ? Object.fromEntries(
+        Object.entries(reminders)
+          .map(([date, list]) => [
+            date,
+            list.filter((r) => r.text.toLowerCase().includes(search.toLowerCase())),
+          ])
+          .filter(([, list]) => (list as Reminder[]).length > 0)
+      )
+    : reminders;
+
   const addReminder = (date: string, reminder: Reminder) => {
     dispatch({ type: ADD_REMINDER, payload: { date, reminder } });
     setShowReminderForm(null);
@@ -235,6 +248,13 @@ const Calendar = () => {
           closeYearSelector={() => setShowYearSelector(false)}
         />
       )}
+      <SearchBar value={search} onChange={setSearch} />
+      {search && (
+        <div className="search-results-count">
+          {Object.values(filteredReminders).flat().length} reminder
+          {Object.values(filteredReminders).flat().length !== 1 ? "s" : ""} matching &ldquo;{search}&rdquo;
+        </div>
+      )}
       {viewMode === "month" ? (
         <>
           <div className="days-of-week">
@@ -248,7 +268,7 @@ const Calendar = () => {
         </>
       ) : (
         <AgendaView
-          reminders={reminders}
+          reminders={filteredReminders}
           isDark={isDark}
           onReminderClick={(detail) => setReminderDetail(detail)}
           onAddClick={(date) => {
