@@ -18,6 +18,7 @@ import {
 import AgendaView from "./AgendaView";
 import WeekView from "./WeekView";
 import SearchBar from "./SearchBar";
+import AiChat from "./AiChat";
 import DeleteConfirmation from "./DeleteConfirmation";
 import ReminderForm from "./ReminderForm";
 import ReminderList from "./ReminderList";
@@ -398,6 +399,7 @@ const Calendar = () => {
           cancelDelete={() => setShowDeleteConfirmation(false)}
         />
       )}
+      <AiChat reminders={reminders} today={today} />
     </div>
   );
 };
