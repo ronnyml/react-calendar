@@ -15,6 +15,7 @@ import {
   CATEGORY_COLORS,
   CATEGORY_COLORS_DARK,
 } from "../utils/constants";
+import AgendaView from "./AgendaView";
 import DeleteConfirmation from "./DeleteConfirmation";
 import ReminderForm from "./ReminderForm";
 import ReminderList from "./ReminderList";
@@ -38,6 +39,7 @@ const loadReminders = (): RemindersState => {
 const Calendar = () => {
   const today = dayjs().format("YYYY-MM-DD");
   const [isDark, setIsDark] = useState(() => localStorage.getItem(THEME_KEY) === "dark");
+  const [viewMode, setViewMode] = useState<"month" | "agenda">("month");
   const [currentDate, setCurrentDate] = useState(dayjs());
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [showYearSelector, setShowYearSelector] = useState(false);
@@ -203,6 +205,20 @@ const Calendar = () => {
             {currentDate.format("MMMM YYYY")}
           </h2>
           <div className="header-actions">
+            <div className="view-toggle">
+              <button
+                className={`view-toggle-btn ${viewMode === "month" ? "active" : ""}`}
+                onClick={() => setViewMode("month")}
+              >
+                Month
+              </button>
+              <button
+                className={`view-toggle-btn ${viewMode === "agenda" ? "active" : ""}`}
+                onClick={() => setViewMode("agenda")}
+              >
+                Agenda
+              </button>
+            </div>
             <button className="today-btn" onClick={goToToday}>Today</button>
             <button className="theme-toggle" onClick={() => setIsDark(d => !d)} aria-label="Toggle dark mode">
               {isDark ? "☀️" : "🌙"}
@@ -219,14 +235,28 @@ const Calendar = () => {
           closeYearSelector={() => setShowYearSelector(false)}
         />
       )}
-      <div className="days-of-week">
-        {DAYS_OF_WEEK.map((day) => (
-          <div className="day-of-week" key={day}>
-            {day}
+      {viewMode === "month" ? (
+        <>
+          <div className="days-of-week">
+            {DAYS_OF_WEEK.map((day) => (
+              <div className="day-of-week" key={day}>
+                {day}
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-      <div className="days-grid">{renderDays()}</div>
+          <div className="days-grid">{renderDays()}</div>
+        </>
+      ) : (
+        <AgendaView
+          reminders={reminders}
+          isDark={isDark}
+          onReminderClick={(detail) => setReminderDetail(detail)}
+          onAddClick={(date) => {
+            setSelectedDate(date);
+            setShowReminderForm({ isEditMode: false, detail: null });
+          }}
+        />
+      )}
       {viewMoreDate && (
         <ReminderList
           date={viewMoreDate}
