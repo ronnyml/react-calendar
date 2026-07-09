@@ -763,7 +763,7 @@ body:has(.calendar-container[data-theme="dark"]) {
   background: var(--surface);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
-  padding: 1.75rem 1.25rem;
+  padding: 1.25rem;
   width: 22rem;
   text-align: center;
   z-index: 500;
@@ -772,16 +772,56 @@ body:has(.calendar-container[data-theme="dark"]) {
 
 .year-selector-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 0.25rem;
   margin-bottom: 1rem;
 }
 
 .year-selector-header h3 {
+  flex: 1;
   margin: 0;
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 700;
   color: var(--text-primary);
+}
+
+.year-nav-btn {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  width: 2rem;
+  height: 2rem;
+  font-size: 1.25rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.12s;
+  flex-shrink: 0;
+}
+
+.year-nav-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.year-close-btn {
+  background: none;
+  border: none;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.25rem 0.4rem;
+  border-radius: var(--radius);
+  transition: color 0.12s, background 0.12s;
+  flex-shrink: 0;
+  margin-left: 0.25rem;
+}
+
+.year-close-btn:hover {
+  color: var(--text-primary);
+  background: var(--surface-hover);
 }
 
 .year-grid {

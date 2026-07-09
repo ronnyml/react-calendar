@@ -10,13 +10,11 @@ const YearSelector: React.FC<YearSelectorProps> = ({
 }) => {
   return (
     <div className="year-selector">
-      <button className="close-button" onClick={closeYearSelector}>
-        X
-      </button>
       <div className="year-selector-header">
-        <button onClick={() => setYearRange(-YEAR_RANGE_SIZE)}>&lt;</button>
-        <h3>{baseYear}</h3>
-        <button onClick={() => setYearRange(YEAR_RANGE_SIZE)}>&gt;</button>
+        <button className="year-nav-btn" onClick={() => setYearRange(-YEAR_RANGE_SIZE)}>&#8249;</button>
+        <h3>{baseYear} – {baseYear + YEAR_RANGE_SIZE - 1}</h3>
+        <button className="year-nav-btn" onClick={() => setYearRange(YEAR_RANGE_SIZE)}>&#8250;</button>
+        <button className="year-close-btn" onClick={closeYearSelector}>✕</button>
       </div>
       <div className="year-grid">
         {Array.from(
