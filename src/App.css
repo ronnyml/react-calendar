@@ -852,3 +852,92 @@ body:has(.calendar-container[data-theme="dark"]) {
 .clickable-year {
   cursor: pointer;
 }
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  body {
+    padding: 0;
+  }
+
+  .calendar-container {
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .header {
+    padding: 0.9rem 0.75rem;
+  }
+
+  .header h2 {
+    font-size: 1.05rem;
+  }
+
+  .header-actions {
+    gap: 0.35rem;
+  }
+
+  .view-toggle-btn {
+    padding: 0.2rem 0.45rem;
+    font-size: 0.68rem;
+  }
+
+  .today-btn {
+    padding: 0.18rem 0.55rem;
+    font-size: 0.68rem;
+  }
+
+  .nav-btn {
+    width: 1.9rem;
+    height: 1.9rem;
+    font-size: 1.25rem;
+  }
+
+  .days-grid {
+    grid-auto-rows: 5rem;
+  }
+
+  .day {
+    padding: 0.3rem 0.25rem;
+  }
+
+  .day .day-header > span,
+  .today-badge {
+    width: 1.35rem;
+    height: 1.35rem;
+    font-size: 0.7rem;
+  }
+
+  .reminder-pill {
+    font-size: 0.6rem;
+    padding: 0.1rem 0.3rem;
+  }
+
+  .reminder-form,
+  .reminder-details,
+  .delete-confirmation {
+    width: calc(100vw - 2rem);
+    padding: 1.25rem;
+  }
+
+  .reminder-list {
+    width: calc(100vw - 2rem);
+  }
+
+  .year-selector {
+    width: calc(100vw - 2rem);
+  }
+
+  .agenda-view {
+    padding: 1rem;
+  }
+
+  .agenda-item {
+    gap: 0.5rem;
+    padding: 0.5rem 0.6rem;
+  }
+
+  .agenda-item-time {
+    min-width: 2.4rem;
+    font-size: 0.72rem;
+  }
+}
