@@ -29,6 +29,38 @@ import { Reminder, ReminderDetail, RemindersState, ShowReminderFormState } from 
 const STORAGE_KEY = "calendar-reminders";
 const THEME_KEY = "calendar-theme";
 
+const expandRecurring = (reminders: RemindersState, windowStart: string, windowEnd: string): RemindersState => {
+  const result: RemindersState = {};
+
+  for (const [date, list] of Object.entries(reminders)) {
+    for (const reminder of list) {
+      const addTo = (d: string) => {
+        if (!result[d]) result[d] = [];
+        if (!result[d].some((r) => r.text === reminder.text && r.time === reminder.time && r.recurrence === reminder.recurrence)) {
+          result[d].push(reminder);
+        }
+      };
+
+      if (date >= windowStart && date <= windowEnd) addTo(date);
+
+      if (reminder.recurrence === "none") continue;
+
+      let cursor = dayjs(date);
+      const end = dayjs(windowEnd);
+      while (cursor.isBefore(end) || cursor.isSame(end, "day")) {
+        if (reminder.recurrence === "daily")   cursor = cursor.add(1, "day");
+        else if (reminder.recurrence === "weekly")  cursor = cursor.add(1, "week");
+        else if (reminder.recurrence === "monthly") cursor = cursor.add(1, "month");
+        const d = cursor.format("YYYY-MM-DD");
+        if (d > windowEnd) break;
+        if (d >= windowStart) addTo(d);
+      }
+    }
+  }
+
+  return result;
+};
+
 const loadReminders = (): RemindersState => {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -197,16 +229,20 @@ const Calendar = () => {
     return [...prevMonthDays, ...currentMonthDays, ...nextMonthDays];
   };
 
+  const windowStart = startOfMonth.subtract(7, "day").format("YYYY-MM-DD");
+  const windowEnd = startOfMonth.add(daysInMonth + 14, "day").format("YYYY-MM-DD");
+  const expandedReminders = expandRecurring(reminders, windowStart, windowEnd);
+
   const filteredReminders: RemindersState = search.trim()
     ? Object.fromEntries(
-        Object.entries(reminders)
+        Object.entries(expandedReminders)
           .map(([date, list]) => [
             date,
             list.filter((r) => r.text.toLowerCase().includes(search.toLowerCase())),
           ])
           .filter(([, list]) => (list as Reminder[]).length > 0)
       )
-    : reminders;
+    : expandedReminders;
 
   const addReminder = (date: string, reminder: Reminder) => {
     dispatch({ type: ADD_REMINDER, payload: { date, reminder } });

@@ -33,6 +33,9 @@ const ReminderDetailView: React.FC<ReminderDetailProps> = ({
         </span>
         <h3>{reminder.text}</h3>
         <p>{formattedDate} — {reminder.time}</p>
+        {reminder.recurrence !== "none" && (
+          <p className="recurrence-label">🔁 Repeats {reminder.recurrence}</p>
+        )}
       </div>
     </div>
   );

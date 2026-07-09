@@ -1,11 +1,18 @@
 import React, { useState, useEffect, ChangeEvent } from "react";
-import { Reminder, ReminderFormProps, ReminderCategory } from "../interfaces/Reminder";
+import { Reminder, ReminderFormProps, ReminderCategory, ReminderRecurrence } from "../interfaces/Reminder";
 
 const CATEGORIES: { value: ReminderCategory; label: string }[] = [
   { value: "work",     label: "💼 Work"     },
   { value: "personal", label: "🏠 Personal"  },
   { value: "health",   label: "💪 Health"    },
   { value: "other",    label: "📌 Other"     },
+];
+
+const RECURRENCES: { value: ReminderRecurrence; label: string }[] = [
+  { value: "none",    label: "Does not repeat"  },
+  { value: "daily",   label: "Every day"        },
+  { value: "weekly",  label: "Every week"       },
+  { value: "monthly", label: "Every month"      },
 ];
 
 const ReminderForm: React.FC<ReminderFormProps> = ({
@@ -20,14 +27,16 @@ const ReminderForm: React.FC<ReminderFormProps> = ({
     text: "",
     time: "",
     category: "other",
+    recurrence: "none",
   });
 
   useEffect(() => {
     if (isEditMode && detail) {
       setFormData({
-        text:     detail.reminder.text     || "",
-        time:     detail.reminder.time     || "",
-        category: detail.reminder.category || "other",
+        text:       detail.reminder.text       || "",
+        time:       detail.reminder.time       || "",
+        category:   detail.reminder.category   || "other",
+        recurrence: detail.reminder.recurrence || "none",
       });
     }
   }, [isEditMode, detail]);
@@ -80,6 +89,11 @@ const ReminderForm: React.FC<ReminderFormProps> = ({
         <select name="category" value={formData.category} onChange={handleChange}>
           {CATEGORIES.map((c) => (
             <option value={c.value} key={c.value}>{c.label}</option>
+          ))}
+        </select>
+        <select name="recurrence" value={formData.recurrence} onChange={handleChange}>
+          {RECURRENCES.map((r) => (
+            <option value={r.value} key={r.value}>{r.label}</option>
           ))}
         </select>
         <button

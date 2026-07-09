@@ -16,6 +16,7 @@ describe("ReminderForm Component", () => {
       text: "Sample Reminder",
       time: "10:00",
       category: "work" as const,
+      recurrence: "none" as const,
     },
   };
 
@@ -99,6 +100,7 @@ describe("ReminderForm Component", () => {
       text: "New Reminder",
       time: "12:15",
       category: "other",
+      recurrence: "none",
     });
     expect(mockCloseForm).toHaveBeenCalled();
   });
@@ -124,6 +126,7 @@ describe("ReminderForm Component", () => {
       text: "Updated Reminder",
       time: "10:00",
       category: "work",
+      recurrence: "none",
     });
     expect(mockCloseForm).toHaveBeenCalled();
   });

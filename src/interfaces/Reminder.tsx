@@ -1,11 +1,13 @@
 import { ADD_REMINDER, EDIT_REMINDER, DELETE_REMINDER } from "../utils/constants";
 
 export type ReminderCategory = "work" | "personal" | "health" | "other";
+export type ReminderRecurrence = "none" | "daily" | "weekly" | "monthly";
 
 export interface Reminder {
   text: string;
   time: string;
   category: ReminderCategory;
+  recurrence: ReminderRecurrence;
 }
 
 export interface ReminderDetail {
