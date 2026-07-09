@@ -43,14 +43,16 @@ const expandRecurring = (reminders: RemindersState, windowStart: string, windowE
 
       if (date >= windowStart && date <= windowEnd) addTo(date);
 
-      if (reminder.recurrence === "none") continue;
+      const recurrence = reminder.recurrence ?? "none";
+      if (recurrence === "none") continue;
 
       let cursor = dayjs(date);
       const end = dayjs(windowEnd);
       while (cursor.isBefore(end) || cursor.isSame(end, "day")) {
-        if (reminder.recurrence === "daily")   cursor = cursor.add(1, "day");
-        else if (reminder.recurrence === "weekly")  cursor = cursor.add(1, "week");
-        else if (reminder.recurrence === "monthly") cursor = cursor.add(1, "month");
+        if (recurrence === "daily")        cursor = cursor.add(1, "day");
+        else if (recurrence === "weekly")  cursor = cursor.add(1, "week");
+        else if (recurrence === "monthly") cursor = cursor.add(1, "month");
+        else break; // unknown value — bail out to prevent infinite loop
         const d = cursor.format("YYYY-MM-DD");
         if (d > windowEnd) break;
         if (d >= windowStart) addTo(d);
