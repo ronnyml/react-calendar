@@ -1,4 +1,4 @@
-import { useState, useReducer } from "react";
+import { useState, useReducer, useEffect } from "react";
 import dayjs from "dayjs";
 
 import {
@@ -19,7 +19,18 @@ import ReminderList from "./ReminderList";
 import ReminderDetailView from "./ReminderDetailView";
 import YearSelector from "./YearSelector";
 import { GenerateDaysProps } from "../interfaces/GenerateDays";
-import { Reminder, ReminderDetail, ShowReminderFormState } from "../interfaces/Reminder";
+import { Reminder, ReminderDetail, RemindersState, ShowReminderFormState } from "../interfaces/Reminder";
+
+const STORAGE_KEY = "calendar-reminders";
+
+const loadReminders = (): RemindersState => {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    return saved ? (JSON.parse(saved) as RemindersState) : {};
+  } catch {
+    return {};
+  }
+};
 
 const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(dayjs());
@@ -29,7 +40,11 @@ const Calendar = () => {
   const startOfMonth = currentDate.startOf("month");
   const daysInMonth = startOfMonth.daysInMonth();
   const startDay = startOfMonth.day();
-  const [reminders, dispatch] = useReducer(remindersReducer, {});
+  const [reminders, dispatch] = useReducer(remindersReducer, undefined, loadReminders);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(reminders));
+  }, [reminders]);
   const [reminderDetail, setReminderDetail] = useState<ReminderDetail | null>(null);
   const [showReminderForm, setShowReminderForm] = useState<ShowReminderFormState | null>(null);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
