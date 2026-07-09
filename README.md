@@ -1,89 +1,71 @@
-# React Calendar Application
+# React Calendar
 
-## Description
-
-React calendar application built with TypeScript that allows users to manage reminders. The app provides functionalities like adding, editing, and deleting reminders for specific dates. It integrates weather forecast data for cities using the Visual Crossing Weather API, offering detailed weather conditions for the reminder's date and location.
+A calendar app for managing reminders, built with React 19, TypeScript, and Vite 8.
 
 ## Live demo
 
 [https://react-calendar-seven-beta.vercel.app](https://react-calendar-seven-beta.vercel.app)
 
-## Code structure
+## Features
 
-The project structure is designed to enhance modularity, readability, and maintainability.
+- **Month and Agenda views** — switch between a classic calendar grid and a chronological list of all upcoming reminders
+- **Reminder management** — add, edit, and delete reminders with a title, time, and category
+- **Categories** — Work, Personal, Health, and Other; each with a distinct color that appears on the calendar grid and in the detail view
+- **Today button** — jump back to the current month from anywhere
+- **Dark mode** — toggle between light and dark themes; preference is saved across sessions
+- **Persistent storage** — all reminders are saved in `localStorage` and survive page refreshes
 
-- **components folder**: Contains all reusable and modular components that encapsulate specific pieces of functionality. Each component is responsible for a distinct part of the application, promoting reusability and isolation.
+## Project structure
 
-  ***Calendar***: The main Calendar component responsible for rendering the calendar grid. It manages key states such as the current date, reminders, and UI interactions like toggling the year selector or opening the reminder form.
+```
+src/
+├── components/
+│   ├── AgendaView.tsx        # Chronological list view of reminders
+│   ├── Calendar.tsx          # Main component: grid, state, routing between views
+│   ├── DeleteConfirmation.tsx
+│   ├── ReminderDetailView.tsx
+│   ├── ReminderForm.tsx      # Add / edit form
+│   ├── ReminderForm.test.tsx
+│   ├── ReminderList.tsx      # Overflow popup for days with many reminders
+│   └── YearSelector.tsx
+├── interfaces/               # TypeScript types for reminders and component props
+├── state/
+│   └── remindersReducer.tsx  # Reducer handling add / edit / delete actions
+└── utils/
+    └── constants.tsx         # Shared constants and category color palettes
+```
 
-  ***DeleteConfirmation***: A confirmation dialog displayed when a user attempts to delete a reminder. It provides "Yes" and "No" options for confirmation.
+## Design decisions
 
-  ***ReminderDetailView***: Displays the detailed view of a specific reminder. It shows the reminder's text, time, city, and weather information. Users can edit or delete the reminder from this view.
+**Reducer for state management** — all reminder mutations go through `remindersReducer`, keeping add/edit/delete logic in one place and making the state predictable.
 
-  ***ReminderForm***: A reusable form component that supports both adding new reminders and editing existing ones. Handles input fields for the reminder's text, time, and city.
+**CSS custom properties for theming** — the dark mode toggle flips a `data-theme` attribute on the root element; every color in the app is a CSS variable that overrides automatically. No runtime style injection needed.
 
-  ***ReminderFormTest***: A set of unit tests for the ReminderForm component, written using React Testing Library and Jest. Ensures the reliability of add and edit functionalities.
+**Category colors via inline styles** — pill colors on the grid are applied as inline `style` props rather than dynamic class names so the palette can be swapped cleanly between light and dark mode without doubling the CSS.
 
-  ***ReminderList***: A popup window that displays a list of reminders for a specific date. Includes clickable items to view details of individual reminders.
+**localStorage with lazy reducer init** — the reducer is initialized from `localStorage` using the third argument of `useReducer` (the lazy initializer), so the app never renders with an empty state that immediately gets replaced.
 
-  ***YearSelector***: Provides a UI for selecting a year. Includes a grid layout of years and navigation controls to move through year ranges.
+## Tech stack
 
-- **interfaces folder**: Contains TypeScript interfaces and types used across the application to enforce type safety. These interfaces define the structure of important objects like reminders, weather data, and component props, making the code more robust and maintainable.
-
-- **services folder**: Centralizes API interactions. This abstraction ensures that UI components remain clean and focused on rendering rather than handling network requests. (e.g., `weatherService` for weather-related data).
-
-- **state folder**: Contains the logic for state management and handling all reminder-related state updates in a single location using the reducer pattern. This centralization ensures consistent updates and predictable state changes.
-
-- **utils folder**: Stores shared constants and helper functions to avoid duplication and centralize reusable logic.
-
-## Design choices
-
-1. **Reducer for state management**:
-   - The `remindersReducer` file is used to manage the reminders' state. This approach centralizes state updates, ensuring that the logic for actions like adding, editing, and deleting reminders remains consistent and predictable.
-   - Using a reducer over local state in each component avoids duplication and keeps the logic organized.
-
-2. **API abstraction**:
-   - All API calls are handled in the `weatherService` file. This abstraction decouples the UI logic from the network requests, making the app more modular and testable.
-
-3. **Caching**:
-   - To prevent unnecessary network requests, a caching mechanism has been implemented. When fetching weather data, the application first checks the cache using the weatherCache utility. If the data for the specified city and date is available in the cache, the app uses it directly without making another network request. This improves performance and reduces API usage.
-
-## Libraries used
-
-1. **[Day.js](https://day.js.org/)**:
-   - A minimalist JavaScript library for parsing, validating, manipulating, and formatting dates.
-   - Used to handle all date-related logic, ensuring reliable and readable date operations.
-
-2. **[Visual Crossing Weather API](https://www.visualcrossing.com/weather-api)**:
-   - Provides weather data for cities and specific dates.
-   - Integrated to display weather conditions for reminders, offering a more personalized user experience.
+| Tool | Version |
+|------|---------|
+| React | 19.2 |
+| TypeScript | 5.9 |
+| Vite | 8 |
+| Vitest | 4 |
+| Day.js | 1.11 |
+| React Testing Library | 16 |
+| ESLint | 10 |
 
 ## Installation
 
-Follow these steps to get the app running locally:
+```sh
+npm install
+npm run dev
+```
 
-1. **Install dependencies**:
+## Running tests
 
-   ```sh
-   npm install
-   ```
-
-2. **Set up environment variables**:
-
-   - Create a `.env` file in the root of the project in case you don't have the .env file.
-   - Add the following env variable:
-     ```
-     VITE_VISUAL_CROSSING_API_KEY=YOUR_API_KEY
-     ```
-
-3. **Run the app**:
-
-   ```sh
-   npm run dev
-   ```
-
-3. **Running tests**:
-
-   ```sh
-   npm run test
-   ```
+```sh
+npm test
+```

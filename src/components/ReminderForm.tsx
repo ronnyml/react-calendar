@@ -19,7 +19,6 @@ const ReminderForm: React.FC<ReminderFormProps> = ({
   const [formData, setFormData] = useState<Reminder>({
     text: "",
     time: "",
-    city: "",
     category: "other",
   });
 
@@ -28,7 +27,6 @@ const ReminderForm: React.FC<ReminderFormProps> = ({
       setFormData({
         text:     detail.reminder.text     || "",
         time:     detail.reminder.time     || "",
-        city:     detail.reminder.city     || "",
         category: detail.reminder.category || "other",
       });
     }
@@ -79,16 +77,6 @@ const ReminderForm: React.FC<ReminderFormProps> = ({
             <option value={t} key={t}>{t}</option>
           ))}
         </select>
-        <div className="field-with-hint">
-          <input
-            type="text"
-            name="city"
-            placeholder="e.g. New York"
-            value={formData.city}
-            onChange={handleChange}
-          />
-          <span className="field-hint">Optional — adds a weather forecast to this reminder</span>
-        </div>
         <select name="category" value={formData.category} onChange={handleChange}>
           {CATEGORIES.map((c) => (
             <option value={c.value} key={c.value}>{c.label}</option>

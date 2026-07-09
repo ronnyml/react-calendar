@@ -5,7 +5,6 @@ export type ReminderCategory = "work" | "personal" | "health" | "other";
 export interface Reminder {
   text: string;
   time: string;
-  city: string;
   category: ReminderCategory;
 }
 

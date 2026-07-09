@@ -24,7 +24,7 @@ const ReminderList: React.FC<ReminderListProps> = ({
                 closePopup();
               }}
             >
-              {reminder.text} - {reminder.time} ({reminder.city})
+              {reminder.text} — {reminder.time}
             </li>
           ))}
         </ul>

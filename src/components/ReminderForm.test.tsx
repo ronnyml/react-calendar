@@ -15,7 +15,6 @@ describe("ReminderForm Component", () => {
     reminder: {
       text: "Sample Reminder",
       time: "10:00",
-      city: "New York",
       category: "work" as const,
     },
   };
@@ -38,7 +37,6 @@ describe("ReminderForm Component", () => {
     expect(screen.getByText(/Add Reminder — 2025-02-05/i)).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/Reminder text/i)).toBeInTheDocument();
     expect(screen.getByText(/Select time/i)).toBeInTheDocument();
-    expect(screen.getByPlaceholderText(/e.g. New York/i)).toBeInTheDocument();
   });
 
   test("renders the edit reminder form correctly", () => {
@@ -55,7 +53,6 @@ describe("ReminderForm Component", () => {
     expect(screen.getByText(/Sample Reminder/i)).toBeInTheDocument();
     expect(screen.getByDisplayValue(/Sample Reminder/i)).toBeInTheDocument();
     expect(screen.getByDisplayValue(/10:00/i)).toBeInTheDocument();
-    expect(screen.getByDisplayValue(/New York/i)).toBeInTheDocument();
   });
 
   test("updates form fields on input change", () => {
@@ -68,20 +65,17 @@ describe("ReminderForm Component", () => {
         closeForm={mockCloseForm}
       />
     );
-  
+
     const textInput = screen.getByPlaceholderText(/Reminder text/i);
-    const cityInput = screen.getByPlaceholderText(/e.g. New York/i);
     const [timeSelect] = screen.getAllByRole('combobox');
 
     fireEvent.change(textInput, { target: { value: "New Reminder" } });
-    fireEvent.change(cityInput, { target: { value: "Los Angeles" } });
     fireEvent.change(timeSelect, { target: { value: "12:15" } });
 
     expect(screen.getByDisplayValue(/New Reminder/i)).toBeInTheDocument();
-    expect(screen.getByDisplayValue(/Los Angeles/i)).toBeInTheDocument();
     expect(timeSelect).toHaveValue("12:15");
   });
-  
+
   test("calls addReminder function on submit", () => {
     render(
       <ReminderForm
@@ -92,22 +86,18 @@ describe("ReminderForm Component", () => {
         closeForm={mockCloseForm}
       />
     );
-  
+
     const textInput = screen.getByPlaceholderText(/Reminder text/i);
-    const cityInput = screen.getByPlaceholderText(/e.g. New York/i);
     const [timeSelect] = screen.getAllByRole('combobox');
     const submitButton = screen.getByRole('button', { name: /add reminder/i });
 
     fireEvent.change(textInput, { target: { value: "New Reminder" } });
-    fireEvent.change(cityInput, { target: { value: "Los Angeles" } });
     fireEvent.change(timeSelect, { target: { value: "12:15" } });
-
     fireEvent.click(submitButton);
 
     expect(mockAddReminder).toHaveBeenCalledWith("2025-02-05", {
       text: "New Reminder",
       time: "12:15",
-      city: "Los Angeles",
       category: "other",
     });
     expect(mockCloseForm).toHaveBeenCalled();
@@ -133,7 +123,6 @@ describe("ReminderForm Component", () => {
     expect(mockEditReminder).toHaveBeenCalledWith("2025-02-05", 0, {
       text: "Updated Reminder",
       time: "10:00",
-      city: "New York",
       category: "work",
     });
     expect(mockCloseForm).toHaveBeenCalled();

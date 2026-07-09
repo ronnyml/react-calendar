@@ -56,7 +56,6 @@ const AgendaView: React.FC<AgendaViewProps> = ({ reminders, isDark, onReminderCl
                   {reminder.category ?? "other"}
                 </span>
               </div>
-              <div className="agenda-item-city">{reminder.city}</div>
             </div>
           );
         })}
