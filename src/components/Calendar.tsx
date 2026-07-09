@@ -164,9 +164,7 @@ const Calendar = () => {
                       setReminderDetail({date: formattedDate, reminder, index});
                     }}
                   >
-                    {reminder.text.length > 12
-                      ? `${reminder.text.slice(0, 12)}…`
-                      : reminder.text}
+                    {reminder.text}
                   </div>
                 );
               })}
