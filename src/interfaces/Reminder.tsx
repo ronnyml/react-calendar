@@ -70,3 +70,12 @@ export interface DeleteReminderAction {
     index: number;
   };
 }
+
+export interface MoveReminderAction {
+  type: "MOVE_REMINDER";
+  payload: {
+    fromDate: string;
+    toDate: string;
+    index: number;
+  };
+}

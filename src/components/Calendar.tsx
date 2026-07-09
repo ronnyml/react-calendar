@@ -1,4 +1,4 @@
-import { useState, useReducer, useEffect } from "react";
+import { useState, useReducer, useEffect, useRef } from "react";
 import dayjs from "dayjs";
 
 import {
@@ -42,6 +42,8 @@ const Calendar = () => {
   const [isDark, setIsDark] = useState(() => localStorage.getItem(THEME_KEY) === "dark");
   const [viewMode, setViewMode] = useState<"month" | "agenda">("month");
   const [search, setSearch] = useState("");
+  const [dragOverDate, setDragOverDate] = useState<string | null>(null);
+  const dragSource = useRef<{ date: string; index: number } | null>(null);
   const [currentDate, setCurrentDate] = useState(dayjs());
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [showYearSelector, setShowYearSelector] = useState(false);
@@ -79,13 +81,25 @@ const Calendar = () => {
     const dayReminders = filteredReminders[formattedDate] || [];
     const hiddenRemindersCount = dayReminders.length - MAX_VISIBLE_REMINDERS;
 
+    const isDragOver = dragOverDate === formattedDate;
+
     return (
       <div
-        className={`day ${className}`}
+        className={`day ${className}${isDragOver ? " drag-over" : ""}`}
         key={key}
         onClick={() => {
           setSelectedDate(formattedDate);
           setShowReminderForm({ isEditMode: false, detail: null });
+        }}
+        onDragOver={(e) => { e.preventDefault(); setDragOverDate(formattedDate); }}
+        onDragLeave={() => setDragOverDate(null)}
+        onDrop={(e) => {
+          e.preventDefault();
+          setDragOverDate(null);
+          if (dragSource.current && dragSource.current.date !== formattedDate) {
+            moveReminder(dragSource.current.date, formattedDate, dragSource.current.index);
+          }
+          dragSource.current = null;
         }}
       >
         <div className="day-header">
@@ -100,7 +114,13 @@ const Calendar = () => {
                   <div
                     className="reminder-pill clickable"
                     key={index}
+                    draggable
                     style={{ background: colors.bg, borderLeftColor: colors.border, color: colors.text }}
+                    onDragStart={(e) => {
+                      e.stopPropagation();
+                      dragSource.current = { date: formattedDate, index };
+                      e.dataTransfer.effectAllowed = "move";
+                    }}
                     onClick={(e) => {
                       e.stopPropagation();
                       setReminderDetail({date: formattedDate, reminder, index});
@@ -198,6 +218,10 @@ const Calendar = () => {
       payload: { date, index, updatedReminder },
     });
     setShowReminderForm(null);
+  };
+
+  const moveReminder = (fromDate: string, toDate: string, index: number) => {
+    dispatch({ type: "MOVE_REMINDER", payload: { fromDate, toDate, index } });
   };
 
   const deleteReminder = (date: string, index: number) => {

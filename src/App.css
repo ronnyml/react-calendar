@@ -209,6 +209,26 @@ body:has(.calendar-container[data-theme="dark"]) {
   background: var(--accent-light);
 }
 
+.day.drag-over {
+  background: #dbeafe;
+  outline: 2px dashed var(--accent);
+  outline-offset: -2px;
+}
+
+.calendar-container[data-theme="dark"] .day.drag-over {
+  background: #1e3a5f;
+  outline-color: var(--accent);
+}
+
+.reminder-pill[draggable="true"] {
+  cursor: grab;
+}
+
+.reminder-pill[draggable="true"]:active {
+  cursor: grabbing;
+  opacity: 0.6;
+}
+
 .day:nth-child(7n) {
   border-right: none;
 }
