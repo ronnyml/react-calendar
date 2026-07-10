@@ -30,6 +30,9 @@ export interface ReminderDetailProps {
   setShowReminderForm: (params: { detail: ReminderDetail; isEditMode: boolean }) => void;
   closeDetail: () => void;
   openDeleteConfirmation?: () => void;
+  onReschedule?: (fromDate: string, index: number, toDate: string, updatedReminder: Reminder) => void;
+  reminders?: RemindersState;
+  today?: string;
 }
 
 export interface ReminderListProps {

@@ -5,6 +5,12 @@ const API_KEY = import.meta.env.VITE_GROQ_API_KEY as string;
 const MODEL = "llama-3.3-70b-versatile";
 const BASE = "https://api.groq.com/openai/v1/chat/completions";
 
+export interface RescheduleSuggestion {
+  date: string;
+  time: string;
+  reason: string;
+}
+
 export interface ParsedReminder {
   text: string;
   date: string;
@@ -158,5 +164,73 @@ export async function* streamChat(
         // ignore malformed SSE chunks
       }
     }
+  }
+}
+
+export async function suggestReschedule(
+  reminderText: string,
+  reminderDate: string,
+  reminderTime: string,
+  userRequest: string,
+  reminders: RemindersState,
+  today: string
+): Promise<RescheduleSuggestion> {
+  const lines: string[] = [];
+  const sorted = Object.entries(reminders).sort(([a], [b]) => a.localeCompare(b));
+  for (const [date, list] of sorted) {
+    const dateLabel = dayjs(date).format("ddd, MMM D");
+    for (const r of list) {
+      if (date === reminderDate && r.text === reminderText) continue;
+      lines.push(`• ${dateLabel} at ${r.time} — ${r.text}`);
+    }
+  }
+  const schedule = lines.length ? lines.join("\n") : "No other reminders.";
+
+  const systemPrompt = `You are a smart calendar scheduling assistant.
+Today is ${today} (${dayjs(today).format("dddd, MMMM D, YYYY")}).
+
+Reminder to reschedule: "${reminderText}"
+Currently: ${dayjs(reminderDate).format("MMMM D, YYYY")} at ${reminderTime}
+
+Other reminders to avoid conflicts:
+${schedule}
+
+Based on the user's request, suggest a new date and time. Reply ONLY with valid JSON, no markdown:
+{
+  "date": "YYYY-MM-DD",
+  "time": "HH:MM (24h, 15-min boundary)",
+  "reason": "one-line explanation"
+}`;
+
+  const res = await fetch(BASE, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${API_KEY}`,
+    },
+    body: JSON.stringify({
+      model: MODEL,
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userRequest },
+      ],
+      temperature: 0.3,
+      max_tokens: 150,
+    }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error?.message ?? `API error ${res.status}`);
+  }
+
+  const data = await res.json();
+  const raw: string = data.choices?.[0]?.message?.content ?? "";
+  const clean = raw.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
+
+  try {
+    return JSON.parse(clean) as RescheduleSuggestion;
+  } catch {
+    throw new Error("Couldn't parse the suggestion. Try rephrasing your request.");
   }
 }

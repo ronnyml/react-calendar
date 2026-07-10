@@ -307,6 +307,12 @@ const Calendar = () => {
     setShowDeleteConfirmation(false);
   };
 
+  const rescheduleReminder = (fromDate: string, index: number, toDate: string, updatedReminder: import("../interfaces/Reminder").Reminder) => {
+    dispatch({ type: DELETE_REMINDER, payload: { date: fromDate, index } });
+    dispatch({ type: ADD_REMINDER, payload: { date: toDate, reminder: updatedReminder } });
+    setReminderDetail(null);
+  };
+
   return (
     <div className="calendar-container" data-theme={isDark ? "dark" : "light"}>
       <div className="header">
@@ -425,6 +431,9 @@ const Calendar = () => {
           }}
           openDeleteConfirmation={() => setShowDeleteConfirmation(true)}
           closeDetail={() => setReminderDetail(null)}
+          onReschedule={rescheduleReminder}
+          reminders={reminders}
+          today={today}
         />
       )}
       {showDeleteConfirmation && reminderDetail && (
