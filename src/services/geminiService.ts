@@ -1,9 +1,9 @@
 import dayjs from "dayjs";
 import { RemindersState } from "../interfaces/Reminder";
 
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY as string;
-const MODEL = "gemini-1.5-flash";
-const BASE = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}`;
+const API_KEY = import.meta.env.VITE_GROQ_API_KEY as string;
+const MODEL = "llama-3.3-70b-versatile";
+const BASE = "https://api.groq.com/openai/v1/chat/completions";
 
 export interface ParsedReminder {
   text: string;
@@ -19,11 +19,7 @@ export async function parseReminderNL(
 ): Promise<ParsedReminder> {
   const dayOfWeek = dayjs(today).format("dddd");
 
-  const prompt = `Today is ${today} (${dayOfWeek}).
-
-Parse this reminder request and reply with ONLY valid JSON — no markdown fences, no explanation.
-
-Input: "${input}"
+  const systemPrompt = `You are a reminder parser. Extract structured data from natural language reminder descriptions and return ONLY valid JSON with no markdown, no explanation.
 
 Required JSON format:
 {
@@ -36,17 +32,28 @@ Required JSON format:
 
 Rules:
 - tomorrow = ${dayjs(today).add(1, "day").format("YYYY-MM-DD")}
-- "next [weekday]" = the coming occurrence of that weekday (not today if today matches)
+- "next [weekday]" = the coming occurrence of that weekday (not today even if it matches)
 - Default time: "09:00" when not specified. Round to nearest 15-min boundary.
 - Category: doctor/dentist/gym/medicine/workout/health → health; meeting/deadline/project/sprint/review/work → work; family/birthday/personal/friend → personal; else → other
 - Recurrence: "every day/daily" → daily; "every week/weekly" → weekly; "every month/monthly" → monthly; else → none`;
 
-  const res = await fetch(`${BASE}:generateContent?key=${API_KEY}`, {
+  const res = await fetch(BASE, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${API_KEY}`,
+    },
     body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { temperature: 0.1, maxOutputTokens: 256 },
+      model: MODEL,
+      messages: [
+        { role: "system", content: systemPrompt },
+        {
+          role: "user",
+          content: `Today is ${today} (${dayOfWeek}). Parse this reminder: "${input}"`,
+        },
+      ],
+      temperature: 0.1,
+      max_tokens: 256,
     }),
   });
 
@@ -56,7 +63,7 @@ Rules:
   }
 
   const data = await res.json();
-  const raw: string = data.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+  const raw: string = data.choices?.[0]?.message?.content ?? "";
   const clean = raw.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
 
   try {
@@ -66,7 +73,7 @@ Rules:
   }
 }
 
-export type ChatMessage = { role: "user" | "model"; text: string };
+export type ChatMessage = { role: "user" | "assistant"; text: string };
 
 function buildSystemPrompt(reminders: RemindersState, today: string): string {
   const label = dayjs(today).format("dddd, MMMM D, YYYY");
@@ -102,16 +109,23 @@ export async function* streamChat(
 ): AsyncGenerator<string, void, unknown> {
   const systemPrompt = buildSystemPrompt(reminders, today);
 
-  const res = await fetch(`${BASE}:streamGenerateContent?alt=sse&key=${API_KEY}`, {
+  const messages = [
+    { role: "system", content: systemPrompt },
+    ...history.map((m) => ({ role: m.role, content: m.text })),
+  ];
+
+  const res = await fetch(BASE, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${API_KEY}`,
+    },
     body: JSON.stringify({
-      system_instruction: { parts: [{ text: systemPrompt }] },
-      contents: history.map((m) => ({
-        role: m.role,
-        parts: [{ text: m.text }],
-      })),
-      generationConfig: { temperature: 0.7, maxOutputTokens: 512 },
+      model: MODEL,
+      messages,
+      temperature: 0.7,
+      max_tokens: 512,
+      stream: true,
     }),
   });
 
@@ -135,11 +149,10 @@ export async function* streamChat(
     for (const line of lines) {
       if (!line.startsWith("data:")) continue;
       const json = line.slice(5).trim();
-      if (!json) continue;
+      if (json === "[DONE]") return;
       try {
         const chunk = JSON.parse(json);
-        const text: string | undefined =
-          chunk.candidates?.[0]?.content?.parts?.[0]?.text;
+        const text: string | undefined = chunk.choices?.[0]?.delta?.content;
         if (text) yield text;
       } catch {
         // ignore malformed SSE chunks

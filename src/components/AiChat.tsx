@@ -15,7 +15,7 @@ const SUGGESTIONS = [
 
 const AiChat: React.FC<AiChatProps> = ({ reminders, today }) => {
   const [open, setOpen] = useState(false);
-  const [history, setHistory] = useState<ChatMessage[]>([]);
+  const [history, setHistory] = useState<ChatMessage[]>([]); // role: "user" | "assistant"
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -42,14 +42,14 @@ const AiChat: React.FC<AiChatProps> = ({ reminders, today }) => {
     setStreaming(true);
 
     // placeholder for streaming response
-    setHistory((h) => [...h, { role: "model", text: "" }]);
+    setHistory((h) => [...h, { role: "assistant", text: "" }]);
 
     try {
       for await (const chunk of streamChat(next, reminders, today)) {
         setHistory((h) => {
           const copy = [...h];
           copy[copy.length - 1] = {
-            role: "model",
+            role: "assistant",
             text: copy[copy.length - 1].text + chunk,
           };
           return copy;
@@ -105,9 +105,9 @@ const AiChat: React.FC<AiChatProps> = ({ reminders, today }) => {
             ) : (
               history.map((msg, i) => {
                 const isLastModel =
-                  msg.role === "model" && i === history.length - 1;
+                  msg.role === "assistant" && i === history.length - 1;
                 return (
-                  <div key={i} className={`ai-chat-msg ai-chat-msg-${msg.role}`}>
+                  <div key={i} className={`ai-chat-msg ${msg.role === "user" ? "ai-chat-msg-user" : "ai-chat-msg-assistant"}`}>
                     {msg.text ? (
                       msg.text
                     ) : isLastModel && streaming ? (

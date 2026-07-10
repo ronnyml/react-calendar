@@ -1416,7 +1416,7 @@ body:has(.calendar-container[data-theme="dark"]) {
   border-bottom-right-radius: 0.25rem;
 }
 
-.ai-chat-msg-model {
+.ai-chat-msg-assistant {
   background: var(--surface-2);
   color: var(--text-primary);
   border: 1px solid var(--border);
