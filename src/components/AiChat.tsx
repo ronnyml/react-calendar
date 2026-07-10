@@ -87,40 +87,41 @@ const AiChat: React.FC<AiChatProps> = ({ reminders, today }) => {
           </div>
 
           <div className="ai-chat-messages">
-            {history.length === 0 ? (
+            {history.length === 0 && (
               <div className="ai-chat-empty">
-                <p>Ask me anything about your schedule.</p>
-                <div className="ai-suggestions">
-                  {SUGGESTIONS.map((s) => (
-                    <button
-                      key={s}
-                      className="ai-suggestion-chip"
-                      onClick={() => send(s)}
-                    >
-                      {s}
-                    </button>
-                  ))}
-                </div>
+                <p>Ask me anything about your calendar.</p>
               </div>
-            ) : (
-              history.map((msg, i) => {
-                const isLastModel =
-                  msg.role === "assistant" && i === history.length - 1;
-                return (
-                  <div key={i} className={`ai-chat-msg ${msg.role === "user" ? "ai-chat-msg-user" : "ai-chat-msg-assistant"}`}>
-                    {msg.text ? (
-                      msg.text
-                    ) : isLastModel && streaming ? (
-                      <span className="ai-typing-dots">
-                        <span /><span /><span />
-                      </span>
-                    ) : null}
-                  </div>
-                );
-              })
             )}
+            {history.map((msg, i) => {
+              const isLastModel =
+                msg.role === "assistant" && i === history.length - 1;
+              return (
+                <div key={i} className={`ai-chat-msg ${msg.role === "user" ? "ai-chat-msg-user" : "ai-chat-msg-assistant"}`}>
+                  {msg.text ? (
+                    msg.text
+                  ) : isLastModel && streaming ? (
+                    <span className="ai-typing-dots">
+                      <span /><span /><span />
+                    </span>
+                  ) : null}
+                </div>
+              );
+            })}
             {error && <div className="ai-chat-error">{error}</div>}
             <div ref={bottomRef} />
+          </div>
+
+          <div className="ai-suggestions">
+            {SUGGESTIONS.map((s) => (
+              <button
+                key={s}
+                className="ai-suggestion-chip"
+                onClick={() => send(s)}
+                disabled={streaming}
+              >
+                {s}
+              </button>
+            ))}
           </div>
 
           <div className="ai-chat-input-row">
@@ -128,7 +129,7 @@ const AiChat: React.FC<AiChatProps> = ({ reminders, today }) => {
               ref={inputRef}
               className="ai-chat-input"
               type="text"
-              placeholder="Ask about your schedule…"
+              placeholder="Ask anything about your calendar…"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && send(input)}

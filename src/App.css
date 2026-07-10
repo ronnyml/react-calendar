@@ -1376,9 +1376,11 @@ body:has(.calendar-container[data-theme="dark"]) {
 
 .ai-suggestions {
   display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-  margin-top: 0.75rem;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  padding: 0.6rem 0.85rem;
+  border-top: 1px solid var(--border);
 }
 
 .ai-suggestion-chip {
