@@ -1,4 +1,4 @@
-# React Calendar
+# React AI Calendar
 
 A calendar app for managing reminders, built with React 19, TypeScript, and Vite 8.
 
@@ -6,7 +6,7 @@ A calendar app for managing reminders, built with React 19, TypeScript, and Vite
 
 [https://react-calendar-seven-beta.vercel.app](https://react-calendar-seven-beta.vercel.app)
 
-![React Calendar screenshot](docs/screenshot.png)
+![React AI Calendar screenshot](docs/screenshot.png)
 
 ## Features
 
