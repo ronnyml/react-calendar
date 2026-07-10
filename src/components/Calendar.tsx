@@ -111,6 +111,42 @@ const Calendar = () => {
   };
   const goToToday = () => setCurrentDate(dayjs());
 
+  useEffect(() => {
+    const handle = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement).tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+
+      const anyModalOpen = showReminderForm || reminderDetail || showDeleteConfirmation || viewMoreDate || showYearSelector;
+
+      if (e.key === "Escape") {
+        if (showDeleteConfirmation)  setShowDeleteConfirmation(false);
+        else if (reminderDetail)     setReminderDetail(null);
+        else if (showReminderForm)   setShowReminderForm(null);
+        else if (viewMoreDate)       setViewMoreDate(null);
+        else if (showYearSelector)   setShowYearSelector(false);
+        return;
+      }
+
+      if (anyModalOpen) return;
+
+      switch (e.key) {
+        case "ArrowLeft":  changeMonth(-1); break;
+        case "ArrowRight": changeMonth(1);  break;
+        case "n": case "N":
+          setSelectedDate(today);
+          setShowReminderForm({ isEditMode: false, detail: null });
+          break;
+        case "t": case "T": goToToday();          break;
+        case "m": case "M": setViewMode("month");  break;
+        case "w": case "W": setViewMode("week");   break;
+        case "a": case "A": setViewMode("agenda"); break;
+      }
+    };
+
+    window.addEventListener("keydown", handle);
+    return () => window.removeEventListener("keydown", handle);
+  }, [showReminderForm, reminderDetail, showDeleteConfirmation, viewMoreDate, showYearSelector, today, currentDate]);
+
   const renderDay = (day: number, key: string, date: dayjs.Dayjs, className: string) => {
     const formattedDate = date.format("YYYY-MM-DD");
     const isToday = formattedDate === today;
