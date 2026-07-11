@@ -234,3 +234,88 @@ Based on the user's request, suggest a new date and time. Reply ONLY with valid 
     throw new Error("Couldn't parse the suggestion. Try rephrasing your request.");
   }
 }
+
+export async function* streamDigest(
+  reminders: RemindersState,
+  weekStart: string,
+  weekEnd: string,
+  today: string
+): AsyncGenerator<string, void, unknown> {
+  const lines: string[] = [];
+  const sorted = Object.entries(reminders)
+    .filter(([date]) => date >= weekStart && date <= weekEnd)
+    .sort(([a], [b]) => a.localeCompare(b));
+
+  for (const [date, list] of sorted) {
+    const dateLabel = dayjs(date).format("dddd, MMM D");
+    for (const r of list) {
+      const rec = r.recurrence !== "none" ? ` (repeats ${r.recurrence})` : "";
+      lines.push(`• ${dateLabel} at ${r.time} — ${r.text} [${r.category}]${rec}`);
+    }
+  }
+
+  const schedule = lines.length ? lines.join("\n") : "No reminders scheduled this week.";
+  const weekStartLabel = dayjs(weekStart).format("MMMM D");
+  const weekEndLabel = dayjs(weekEnd).format("MMMM D, YYYY");
+
+  const systemPrompt = `You are a helpful calendar assistant. Today is ${dayjs(today).format("dddd, MMMM D, YYYY")}.
+
+Analyze the user's schedule for the week of ${weekStartLabel} – ${weekEndLabel} and produce a short, friendly digest. Structure it with these bold section labels on their own lines:
+
+**Overview** — how busy is the week overall (light / moderate / packed)?
+**Busiest day** — which day has the most events and what are they?
+**Free time** — which days look light or empty?
+**Balance** — work vs health vs personal distribution.
+**Tip** — one concrete, specific suggestion to improve the week.
+
+Keep it under 200 words total. Be friendly and specific, not generic.`;
+
+  const res = await fetch(BASE, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${API_KEY}`,
+    },
+    body: JSON.stringify({
+      model: MODEL,
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: `My schedule:\n${schedule}\n\nGive me my weekly digest.` },
+      ],
+      temperature: 0.6,
+      max_tokens: 400,
+      stream: true,
+    }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error?.message ?? `API error ${res.status}`);
+  }
+
+  const reader = res.body!.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+
+    buffer += decoder.decode(value, { stream: true });
+    const sseLines = buffer.split("\n");
+    buffer = sseLines.pop() ?? "";
+
+    for (const sseLine of sseLines) {
+      if (!sseLine.startsWith("data:")) continue;
+      const json = sseLine.slice(5).trim();
+      if (json === "[DONE]") return;
+      try {
+        const chunk = JSON.parse(json);
+        const text: string | undefined = chunk.choices?.[0]?.delta?.content;
+        if (text) yield text;
+      } catch {
+        // ignore malformed SSE chunks
+      }
+    }
+  }
+}

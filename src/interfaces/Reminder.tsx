@@ -22,6 +22,7 @@ export interface ReminderFormProps {
   addReminder: (date: string, reminder: Reminder) => void;
   editReminder: (date: string, index: number, updatedReminder: Reminder) => void;
   closeForm: () => void;
+  reminders?: RemindersState;
 }
 
 export interface ReminderDetailProps {

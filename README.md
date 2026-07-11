@@ -13,6 +13,9 @@ A calendar app with AI-powered reminder management, built with React 19, TypeScr
 ### AI
 - **Smart Add** — describe a reminder in plain English ("Dentist next Friday at 2pm") and the AI extracts the date, time, category, and recurrence automatically, pre-filling the form for review before saving
 - **AI Assistant** — floating chat panel powered by Groq (Llama 3.3 70B); ask questions about your schedule in natural language ("What do I have this week?", "Am I free on Monday?") and get streaming answers with full awareness of your current reminders
+- **AI Smart Reschedule** — open any reminder's detail view and ask the AI to move it ("push to next Monday morning"); the model picks a conflict-free slot, explains its reasoning, and moves the reminder on confirmation
+- **Conflict Detection** — when adding a reminder, the form instantly warns if another reminder already occupies the same time slot on the same day
+- **Weekly AI Digest** — click 📊 Digest in the header to get a streaming AI summary of the current week: overview, busiest day, free slots, work/health/personal balance, and a personalized scheduling tip
 
 ### Calendar
 - **Multiple views** — Month, Week, and Agenda; switch instantly without losing state
@@ -21,6 +24,7 @@ A calendar app with AI-powered reminder management, built with React 19, TypeScr
 - **Recurring reminders** — set daily, weekly, or monthly recurrence; instances are expanded at render time without mutating stored state
 - **Search** — filter reminders across all views; matching pills highlight, non-matching ones dim
 - **Categories** — Work, Personal, Health, and Other, each with a distinct color in both light and dark mode
+- **Keyboard shortcuts** — `N` new reminder, `T` today, `M/W/A` switch views, `←/→` prev/next month, `Esc` close any modal
 - **Today button** — jump back to the current month from anywhere
 - **Dark mode** — toggle between light and dark themes; preference is saved across sessions
 - **Responsive** — fully usable on mobile; week view scrolls horizontally, month view fills the screen
@@ -42,6 +46,7 @@ src/
 │   ├── ReminderList.tsx      # Overflow popup for days with many reminders
 │   ├── SearchBar.tsx
 │   ├── WeekView.tsx          # Hourly week grid with category-colored events
+│   └── WeeklyDigest.tsx      # Streaming AI weekly digest modal
 │   └── YearSelector.tsx
 ├── interfaces/               # TypeScript types for reminders and component props
 ├── services/

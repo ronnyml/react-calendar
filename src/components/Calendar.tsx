@@ -19,6 +19,7 @@ import AgendaView from "./AgendaView";
 import WeekView from "./WeekView";
 import SearchBar from "./SearchBar";
 import AiChat from "./AiChat";
+import WeeklyDigest from "./WeeklyDigest";
 import DeleteConfirmation from "./DeleteConfirmation";
 import ReminderForm from "./ReminderForm";
 import ReminderList from "./ReminderList";
@@ -101,6 +102,7 @@ const Calendar = () => {
   const [showReminderForm, setShowReminderForm] = useState<ShowReminderFormState | null>(null);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [viewMoreDate, setViewMoreDate] = useState<string | null>(null);
+  const [showDigest, setShowDigest] = useState(false);
 
   const changeMonth = (offset: number) =>
     setCurrentDate(currentDate.add(offset, "month"));
@@ -346,6 +348,7 @@ const Calendar = () => {
               </button>
             </div>
             <button className="today-btn" onClick={goToToday}>Today</button>
+            <button className="digest-btn" onClick={() => setShowDigest(true)}>📊 Digest</button>
             <button className="theme-toggle" onClick={() => setIsDark(d => !d)} aria-label="Toggle dark mode">
               {isDark ? "☀️" : "🌙"}
             </button>
@@ -419,6 +422,7 @@ const Calendar = () => {
           addReminder={addReminder}
           editReminder={editReminder}
           closeForm={() => setShowReminderForm(null)}
+          reminders={expandedReminders}
         />
       )}
       {reminderDetail && !showDeleteConfirmation && (
@@ -426,6 +430,7 @@ const Calendar = () => {
           detail={reminderDetail}
           editReminder={editReminder}
           setShowReminderForm={(params) => {
+            if (params.detail) setSelectedDate(params.detail.date);
             setShowReminderForm(params);
             setReminderDetail(null);
           }}
@@ -442,6 +447,13 @@ const Calendar = () => {
             deleteReminder(reminderDetail.date, reminderDetail.index)
           }
           cancelDelete={() => setShowDeleteConfirmation(false)}
+        />
+      )}
+      {showDigest && (
+        <WeeklyDigest
+          reminders={reminders}
+          today={today}
+          onClose={() => setShowDigest(false)}
         />
       )}
       <AiChat reminders={reminders} today={today} />

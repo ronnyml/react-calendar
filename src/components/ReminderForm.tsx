@@ -23,7 +23,8 @@ const ReminderForm: React.FC<ReminderFormProps> = ({
   detail,
   addReminder,
   editReminder,
-  closeForm
+  closeForm,
+  reminders,
 }) => {
   const isEditMode = Boolean(detail);
   const [formData, setFormData] = useState<Reminder>({
@@ -61,7 +62,6 @@ const ReminderForm: React.FC<ReminderFormProps> = ({
   };
 
   const handleSubmit = () => {
-    const effectiveDate = aiDate ?? date;
     if (isEditMode) {
       editReminder(detail!.date, detail!.index, formData);
     } else {
@@ -83,6 +83,12 @@ const ReminderForm: React.FC<ReminderFormProps> = ({
   };
 
   const today = new Date().toISOString().slice(0, 10);
+  const effectiveDate = aiDate ?? date;
+  const conflict = reminders && formData.time
+    ? (reminders[effectiveDate] ?? []).find((r, i) =>
+        r.time === formData.time && !(isEditMode && i === detail?.index)
+      ) ?? null
+    : null;
 
   return (
     <div className="reminder-popup">
@@ -119,6 +125,11 @@ const ReminderForm: React.FC<ReminderFormProps> = ({
             <option value={r.value} key={r.value}>{r.label}</option>
           ))}
         </select>
+        {conflict && (
+          <div className="conflict-warning">
+            ⚠️ Conflicts with &ldquo;{conflict.text}&rdquo; already at {conflict.time}
+          </div>
+        )}
         <button
           className="submit-button"
           onClick={handleSubmit}
