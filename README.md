@@ -6,7 +6,7 @@ A calendar app with AI-powered reminder management, built with React 19, TypeScr
 
 [https://react-calendar-seven-beta.vercel.app](https://react-calendar-seven-beta.vercel.app)
 
-![React AI Calendar screenshot](docs/screenshot.png)
+![React AI Calendar screenshot](docs/preview.png)
 
 ## Features
 
