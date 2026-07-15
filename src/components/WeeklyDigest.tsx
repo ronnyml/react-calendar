@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import dayjs from "dayjs";
 import { RemindersState } from "../interfaces/Reminder";
-import { streamDigest } from "../services/geminiService";
+import { streamDigest } from "../services/aiService";
 
 interface WeeklyDigestProps {
   reminders: RemindersState;
@@ -31,23 +31,36 @@ const WeeklyDigest: React.FC<WeeklyDigestProps> = ({ reminders, today, onClose }
   const weekEnd = weekStart.add(6, "day");
 
   useEffect(() => {
-    let cancelled = false;
+    setContent("");
+    setError(null);
+    setLoading(true);
+
+    const controller = new AbortController();
+    const d = dayjs(today);
+    const dow2 = d.day();
+    const ws = d.subtract(dow2 === 0 ? 6 : dow2 - 1, "day");
+    const we = ws.add(6, "day");
 
     const run = async () => {
       try {
         const gen = streamDigest(
           reminders,
-          weekStart.format("YYYY-MM-DD"),
-          weekEnd.format("YYYY-MM-DD"),
-          today
+          ws.format("YYYY-MM-DD"),
+          we.format("YYYY-MM-DD"),
+          today,
+          controller.signal
         );
-        setLoading(false);
+        let firstChunk = true;
         for await (const chunk of gen) {
-          if (cancelled) break;
+          if (firstChunk) {
+            setLoading(false);
+            firstChunk = false;
+          }
           setContent((prev) => prev + chunk);
         }
+        if (firstChunk) setLoading(false);
       } catch (e) {
-        if (!cancelled) {
+        if (!controller.signal.aborted) {
           setError(e instanceof Error ? e.message : "Something went wrong.");
           setLoading(false);
         }
@@ -55,8 +68,8 @@ const WeeklyDigest: React.FC<WeeklyDigestProps> = ({ reminders, today, onClose }
     };
 
     run();
-    return () => { cancelled = true; };
-  }, []);
+    return () => { controller.abort(); };
+  }, [reminders, today]);
 
   return (
     <div className="digest-overlay" onClick={onClose}>

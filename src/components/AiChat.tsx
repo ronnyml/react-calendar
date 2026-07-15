@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { streamChat, ChatMessage } from "../services/geminiService";
+import { streamChat, ChatMessage } from "../services/aiService";
 import { RemindersState } from "../interfaces/Reminder";
 
 interface AiChatProps {
@@ -15,12 +15,13 @@ const SUGGESTIONS = [
 
 const AiChat: React.FC<AiChatProps> = ({ reminders, today }) => {
   const [open, setOpen] = useState(false);
-  const [history, setHistory] = useState<ChatMessage[]>([]); // role: "user" | "assistant"
+  const [history, setHistory] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -30,9 +31,17 @@ const AiChat: React.FC<AiChatProps> = ({ reminders, today }) => {
     if (open) inputRef.current?.focus();
   }, [open]);
 
+  useEffect(() => {
+    return () => { abortRef.current?.abort(); };
+  }, []);
+
   const send = async (text: string) => {
     const trimmed = text.trim();
     if (!trimmed || streaming) return;
+
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
 
     const userMsg: ChatMessage = { role: "user", text: trimmed };
     const next = [...history, userMsg];
@@ -41,11 +50,10 @@ const AiChat: React.FC<AiChatProps> = ({ reminders, today }) => {
     setError(null);
     setStreaming(true);
 
-    // placeholder for streaming response
     setHistory((h) => [...h, { role: "assistant", text: "" }]);
 
     try {
-      for await (const chunk of streamChat(next, reminders, today)) {
+      for await (const chunk of streamChat(next, reminders, today, controller.signal)) {
         setHistory((h) => {
           const copy = [...h];
           copy[copy.length - 1] = {
@@ -56,8 +64,10 @@ const AiChat: React.FC<AiChatProps> = ({ reminders, today }) => {
         });
       }
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Something went wrong.");
-      setHistory((h) => h.slice(0, -1));
+      if (!controller.signal.aborted) {
+        setError(e instanceof Error ? e.message : "Something went wrong.");
+        setHistory((h) => h.slice(0, -1));
+      }
     } finally {
       setStreaming(false);
     }

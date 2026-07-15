@@ -11,7 +11,6 @@ A calendar app with AI-powered reminder management, built with React 19, TypeScr
 ## Features
 
 ### AI
-- **Smart Add** — describe a reminder in plain English ("Dentist next Friday at 2pm") and the AI extracts the date, time, category, and recurrence automatically, pre-filling the form for review before saving
 - **AI Assistant** — floating chat panel powered by Groq (Llama 3.3 70B); ask questions about your schedule in natural language ("What do I have this week?", "Am I free on Monday?") and get streaming answers with full awareness of your current reminders
 - **AI Smart Reschedule** — open any reminder's detail view and ask the AI to move it ("push to next Monday morning"); the model picks a conflict-free slot, explains its reasoning, and moves the reminder on confirmation
 - **Conflict Detection** — when adding a reminder, the form instantly warns if another reminder already occupies the same time slot on the same day
@@ -36,12 +35,11 @@ A calendar app with AI-powered reminder management, built with React 19, TypeScr
 src/
 ├── components/
 │   ├── AiChat.tsx            # Floating AI assistant chat panel with streaming responses
-│   ├── AiInput.tsx           # Smart Add — natural language input inside the reminder form
 │   ├── AgendaView.tsx        # Chronological list view of reminders
 │   ├── Calendar.tsx          # Main component: grid, state, routing between views
 │   ├── DeleteConfirmation.tsx
 │   ├── ReminderDetailView.tsx
-│   ├── ReminderForm.tsx      # Add / edit form with AI Smart Add integration
+│   ├── ReminderForm.tsx      # Add / edit form with conflict detection
 │   ├── ReminderForm.test.tsx
 │   ├── ReminderList.tsx      # Overflow popup for days with many reminders
 │   ├── SearchBar.tsx
@@ -50,7 +48,7 @@ src/
 │   └── YearSelector.tsx
 ├── interfaces/               # TypeScript types for reminders and component props
 ├── services/
-│   └── geminiService.ts      # Groq API integration: NL parsing + streaming chat
+│   └── aiService.ts          # Groq API integration: streaming chat + AI reschedule
 ├── state/
 │   └── remindersReducer.tsx  # Reducer handling add / edit / delete / move actions
 └── utils/
@@ -58,8 +56,6 @@ src/
 ```
 
 ## Design decisions
-
-**Natural language parsing via Groq** — the Smart Add field sends user input to Llama 3.3 70B with a structured prompt that enforces JSON output. The response is parsed and used to pre-fill the form; the user always reviews before saving, so hallucinated dates can be corrected.
 
 **Streaming chat with calendar context injection** — the AI assistant passes the user's full reminder list as a system prompt on every request. Groq's SSE stream is consumed with a `ReadableStream` reader and chunks are appended to the message in real time via React state updates.
 

@@ -427,7 +427,6 @@ const Calendar = () => {
           editReminder={editReminder}
           closeForm={() => setShowReminderForm(null)}
           reminders={expandedReminders}
-          today={today}
         />
       )}
       {reminderDetail && !showDeleteConfirmation && (

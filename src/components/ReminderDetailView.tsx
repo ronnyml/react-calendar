@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import dayjs from "dayjs";
 import { ReminderDetailProps } from "../interfaces/Reminder";
-import { suggestReschedule, RescheduleSuggestion } from "../services/geminiService";
+import { suggestReschedule, RescheduleSuggestion } from "../services/aiService";
 
 const ReminderDetailView: React.FC<ReminderDetailProps> = ({
   detail,
@@ -45,7 +45,9 @@ const ReminderDetailView: React.FC<ReminderDetailProps> = ({
 
   const handleConfirmReschedule = () => {
     if (!suggestion || !onReschedule) return;
-    onReschedule(date, index, suggestion.date, { ...reminder, time: suggestion.time });
+    const confirmed = suggestion;
+    setSuggestion(null); // prevent double-click before re-render
+    onReschedule(date, index, confirmed.date, { ...reminder, time: confirmed.time });
     closeDetail();
   };
 

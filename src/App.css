@@ -1162,82 +1162,6 @@ body:has(.calendar-container[data-theme="dark"]) {
   }
 }
 
-/* ── AI Input (inside ReminderForm) ─────────────────────────────────────── */
-.ai-input-section {
-  background: var(--accent-light);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 0.7rem 0.8rem;
-  margin-bottom: 0.85rem;
-}
-
-.ai-input-label {
-  font-size: 0.7rem;
-  font-weight: 700;
-  color: var(--accent);
-  letter-spacing: 0.03em;
-  margin-bottom: 0.45rem;
-  text-transform: uppercase;
-}
-
-.ai-input-row {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.ai-input-text {
-  flex: 1;
-  min-width: 0;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 0.45rem 0.65rem;
-  font-size: 0.78rem;
-  font-family: inherit;
-  background: var(--surface);
-  color: var(--text-primary);
-  outline: none;
-  transition: border-color 0.15s, box-shadow 0.15s;
-}
-
-.ai-input-text:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 2px var(--accent-light);
-}
-
-.ai-input-text::placeholder {
-  color: var(--text-muted);
-  font-style: italic;
-}
-
-.ai-parse-btn {
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius);
-  padding: 0.45rem 1rem;
-  font-size: 0.78rem;
-  font-weight: 600;
-  font-family: inherit;
-  cursor: pointer;
-  white-space: nowrap;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 4rem;
-  transition: opacity 0.15s, transform 0.1s;
-}
-
-.ai-parse-btn:hover:not(:disabled) {
-  opacity: 0.9;
-  transform: translateY(-1px);
-}
-
-.ai-parse-btn:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-  transform: none;
-}
-
 .ai-spinner {
   display: inline-block;
   width: 0.85rem;
@@ -1250,23 +1174,6 @@ body:has(.calendar-container[data-theme="dark"]) {
 
 @keyframes spin {
   to { transform: rotate(360deg); }
-}
-
-.ai-input-error {
-  font-size: 0.72rem;
-  color: var(--danger);
-  margin-top: 0.4rem;
-}
-
-.ai-date-tag {
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: var(--accent);
-  background: var(--accent-light);
-  border-radius: var(--radius);
-  padding: 0.25rem 0.6rem;
-  margin-bottom: 0.6rem;
-  display: inline-block;
 }
 
 /* ── Conflict Warning ────────────────────────────────────────────────────── */
