@@ -41,12 +41,21 @@ export const remindersReducer = (state: RemindersState, action: ReminderActions)
       };
     }
     case "MOVE_REMINDER": {
-      const { fromDate, toDate, index } = action.payload;
-      if (fromDate === toDate) return state;
-      const fromList = [...(state[fromDate] || [])];
-      const [moved] = fromList.splice(index, 1);
-      const toList = [...(state[toDate] || []), moved];
-      return { ...state, [fromDate]: fromList, [toDate]: toList };
+      const { toDate, reminder } = action.payload;
+      let srcDate: string | null = null;
+      let srcIdx = -1;
+      for (const [date, list] of Object.entries(state)) {
+        const idx = list.findIndex(
+          (r) => r.text === reminder.text && r.time === reminder.time &&
+                 r.category === reminder.category && r.recurrence === reminder.recurrence
+        );
+        if (idx !== -1) { srcDate = date; srcIdx = idx; break; }
+      }
+      if (!srcDate || srcIdx === -1 || srcDate === toDate) return state;
+      const fromList = [...state[srcDate]];
+      fromList.splice(srcIdx, 1);
+      const toList = [...(state[toDate] || []), { ...reminder }];
+      return { ...state, [srcDate]: fromList, [toDate]: toList };
     }
     default:
       return state;

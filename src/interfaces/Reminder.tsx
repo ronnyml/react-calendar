@@ -23,6 +23,7 @@ export interface ReminderFormProps {
   editReminder: (date: string, index: number, updatedReminder: Reminder) => void;
   closeForm: () => void;
   reminders?: RemindersState;
+  today?: string;
 }
 
 export interface ReminderDetailProps {
@@ -80,8 +81,7 @@ export interface DeleteReminderAction {
 export interface MoveReminderAction {
   type: "MOVE_REMINDER";
   payload: {
-    fromDate: string;
     toDate: string;
-    index: number;
+    reminder: Reminder;
   };
 }

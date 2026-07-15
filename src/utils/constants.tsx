@@ -1,5 +1,5 @@
 export const DAYS_IN_WEEK: number = 7;
-export const TOTAL_SQUARES: number = 35;
+export const TOTAL_SQUARES: number = 42;
 export const YEAR_RANGE_SIZE: number = 12;
 export const MAX_VISIBLE_REMINDERS: number = 2;
 

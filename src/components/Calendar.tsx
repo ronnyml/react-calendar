@@ -50,10 +50,14 @@ const expandRecurring = (reminders: RemindersState, windowStart: string, windowE
 
       let cursor = dayjs(date);
       const end = dayjs(windowEnd);
+      const originalDay = cursor.date();
       while (cursor.isBefore(end) || cursor.isSame(end, "day")) {
         if (recurrence === "daily")        cursor = cursor.add(1, "day");
         else if (recurrence === "weekly")  cursor = cursor.add(1, "week");
-        else if (recurrence === "monthly") cursor = cursor.add(1, "month");
+        else if (recurrence === "monthly") {
+          cursor = cursor.add(1, "month");
+          cursor = cursor.date(Math.min(originalDay, cursor.daysInMonth()));
+        }
         else break; // unknown value — bail out to prevent infinite loop
         const d = cursor.format("YYYY-MM-DD");
         if (d > windowEnd) break;
@@ -80,7 +84,7 @@ const Calendar = () => {
   const [viewMode, setViewMode] = useState<"month" | "week" | "agenda">("month");
   const [search, setSearch] = useState("");
   const [dragOverDate, setDragOverDate] = useState<string | null>(null);
-  const dragSource = useRef<{ date: string; index: number } | null>(null);
+  const dragSource = useRef<{ date: string; reminder: Reminder } | null>(null);
   const [currentDate, setCurrentDate] = useState(dayjs());
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [showYearSelector, setShowYearSelector] = useState(false);
@@ -172,7 +176,7 @@ const Calendar = () => {
           e.preventDefault();
           setDragOverDate(null);
           if (dragSource.current && dragSource.current.date !== formattedDate) {
-            moveReminder(dragSource.current.date, formattedDate, dragSource.current.index);
+            moveReminder(formattedDate, dragSource.current.reminder);
           }
           dragSource.current = null;
         }}
@@ -195,7 +199,7 @@ const Calendar = () => {
                     style={{ background: colors.bg, borderLeftColor: colors.border, color: colors.text }}
                     onDragStart={(e) => {
                       e.stopPropagation();
-                      dragSource.current = { date: formattedDate, index };
+                      dragSource.current = { date: formattedDate, reminder };
                       e.dataTransfer.effectAllowed = "move";
                     }}
                     onClick={(e) => {
@@ -299,8 +303,8 @@ const Calendar = () => {
     setShowReminderForm(null);
   };
 
-  const moveReminder = (fromDate: string, toDate: string, index: number) => {
-    dispatch({ type: "MOVE_REMINDER", payload: { fromDate, toDate, index } });
+  const moveReminder = (toDate: string, reminder: Reminder) => {
+    dispatch({ type: "MOVE_REMINDER", payload: { toDate, reminder } });
   };
 
   const deleteReminder = (date: string, index: number) => {
@@ -410,7 +414,7 @@ const Calendar = () => {
       {viewMoreDate && (
         <ReminderList
           date={viewMoreDate}
-          reminders={reminders[viewMoreDate]}
+          reminders={expandedReminders[viewMoreDate] || []}
           closePopup={() => setViewMoreDate(null)}
           onReminderClick={(detail) => setReminderDetail(detail)}
         />
@@ -423,6 +427,7 @@ const Calendar = () => {
           editReminder={editReminder}
           closeForm={() => setShowReminderForm(null)}
           reminders={expandedReminders}
+          today={today}
         />
       )}
       {reminderDetail && !showDeleteConfirmation && (
